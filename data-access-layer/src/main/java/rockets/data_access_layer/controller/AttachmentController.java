@@ -23,7 +23,7 @@ public class AttachmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Attachment> getItemById(@PathVariable UUID id) {
+    public ResponseEntity<Attachment> getAttachmentById(@PathVariable UUID id) {
         return attachmentService.getAttachmentById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

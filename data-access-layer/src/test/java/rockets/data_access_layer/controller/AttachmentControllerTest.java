@@ -1,6 +1,5 @@
-package rockets.data_access_layer;
+package rockets.data_access_layer.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,9 +8,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import rockets.data_access_layer.controller.AttachmentController;
 import rockets.data_access_layer.entity.Attachment;
 import rockets.data_access_layer.service.AttachmentService;
+import rockets.data_access_layer.util.Utility;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -19,7 +18,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class AttachmentControllerTest {
@@ -97,8 +96,8 @@ public class AttachmentControllerTest {
         when(attachmentService.createAttachment(any(Attachment.class))).thenReturn(newAttachment);
 
         mockMvc.perform(post("/attachments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(newAttachment)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(Utility.asJsonString(newAttachment)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.url").value("some-url"));
 
@@ -118,8 +117,8 @@ public class AttachmentControllerTest {
         when(attachmentService.updateAttachment(eq(randomId), any(Attachment.class))).thenReturn(Optional.of(updatedAttachment));
 
         mockMvc.perform(put("/attachments/{id}", randomId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(updatedAttachment)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(Utility.asJsonString(updatedAttachment)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.url").value("new-url"));
 
@@ -135,8 +134,8 @@ public class AttachmentControllerTest {
         when(attachmentService.updateAttachment(eq(randomId), any(Attachment.class))).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/attachments/{id}", randomId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(wrongAttachment)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(Utility.asJsonString(wrongAttachment)))
                 .andExpect(status().isNotFound());
 
         verify(attachmentService, times(1)).updateAttachment(eq(randomId), any(Attachment.class));
@@ -151,13 +150,4 @@ public class AttachmentControllerTest {
 
         verify(attachmentService, times(1)).deleteAttachment(randomId);
     }
-
-    private String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
