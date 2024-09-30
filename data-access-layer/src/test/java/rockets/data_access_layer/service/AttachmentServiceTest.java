@@ -7,10 +7,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import rockets.data_access_layer.entity.Attachment;
 import rockets.data_access_layer.repository.AttachmentRepository;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -109,5 +111,4 @@ public class AttachmentServiceTest {
 
         verify(attachmentRepository, times(1)).deleteById(randomId);
     }
-
 }
