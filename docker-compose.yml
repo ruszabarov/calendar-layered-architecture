@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  react-app:
+    image: node:16-alpine
+    container_name: react-app
+    working_dir: /app
+    volumes:
+      - ./client:/app  # Mount the client folder
+    ports:
+      - "3000:3000"  # Expose port 3000 for React
+    command: sh -c "npm install && npm start"  # Install dependencies and start the app
+    environment:
+      - NODE_ENV=development
+      - SPRING_BOOT_API_URL=http://192.168.10.2:8080  # Point React app to Spring Boot IP
+    networks:
+      app-network:
+        ipv4_address: 192.168.10.3  # Assign a static IP to the React container
+
+  spring-boot-app:
+    image: openjdk:17-jdk-alpine
+    container_name: spring-boot-app
+    working_dir: /app
+    volumes:
+      - ./server:/app  # Mount the server folder
+    ports:
+      - "8080:8080"  # Expose port 8080 for Spring Boot
+    command: sh -c "./mvnw spring-boot:run"  # Start Spring Boot app
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:sqlite:///app/data/database.db  # Database connection
+    networks:
+      app-network:
+        ipv4_address: 192.168.10.2  # Assign a static IP to the Spring Boot container
+
+  db-app:
+    image: nouchka/sqlite3
+    container_name: db-app
+    volumes:
+      - ./db:/app/data  # Mount the database folder
+    networks:
+      app-network:
+        ipv4_address: 192.168.10.4  # Assign a static IP to the SQLite container
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24  # Define a custom subnet for the network

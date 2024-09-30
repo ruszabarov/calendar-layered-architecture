@@ -1,0 +1,28 @@
+For all containers on same machine run these two commands:
+
+docker network create --driver bridge app-network
+
+docker-compose up --build
+
+
+
+
+In case we need it on seperate devices may have to run commands like this:
+
+docker swarm init --advertise-addr <Manager-Machine-IP> # run on manager machine
+
+docker swarm join --token <Swarm-Token> <Manager-Machine-IP>:2377 # run on other two machines
+
+docker network create --driver overlay app-network # run on manager machine
+
+docker-compose up react-app # probably manager machine
+
+docker-compose up spring-boot-app # probably one other machine
+
+docker-compose up db-app # probably one other machine
+
+sudo ufw allow 3000/tcp  # For the React app machine
+sudo ufw allow 8080/tcp  # For the Spring Boot machine
+sudo ufw allow 8081/tcp  # For the SQLite DB machine
+
+http://<React-Machine-IP>:3000
