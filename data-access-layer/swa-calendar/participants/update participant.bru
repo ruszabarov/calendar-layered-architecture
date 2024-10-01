@@ -1,0 +1,18 @@
+meta {
+  name: update participant
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{BASE_URL}}/participants/c647597e-7de3-4f9b-9ab9-f16cfc4f7b37
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Ruslan Zabarov",
+    "email": "newemail@case.edu"
+  }
+}

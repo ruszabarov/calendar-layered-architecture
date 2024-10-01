@@ -41,6 +41,34 @@ public class MeetingController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/{id}/participants")
+    public ResponseEntity<Meeting> addParticipantsToMeeting(@PathVariable UUID id, @RequestBody List<UUID> participantIds) {
+        return meetingService.addParticipantsToMeeting(id, participantIds)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}/participants")
+    public ResponseEntity<Meeting> removeParticipantsFromMeeting(@PathVariable UUID id, @RequestBody List<UUID> participantIds) {
+        return meetingService.removeParticipantsFromMeeting(id, participantIds)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/attachments")
+    public ResponseEntity<Meeting> addAttachmentsToMeeting(@PathVariable UUID id, @RequestBody List<UUID> attachmentIds) {
+        return meetingService.addAttachmentToMeeting(id, attachmentIds)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}/attachments")
+    public ResponseEntity<Meeting> removeAttachmentstoMeeting(@PathVariable UUID id, @RequestBody List<UUID> attachmentIds) {
+        return meetingService.removeAttachmentsFromMeeting(id, attachmentIds)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMeeting(@PathVariable UUID id) {
         meetingService.deleteMeeting(id);

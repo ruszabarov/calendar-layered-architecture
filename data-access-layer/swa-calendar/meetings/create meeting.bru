@@ -1,0 +1,20 @@
+meta {
+  name: create meeting
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/meetings
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "date_time": "2024-10-01 14:30:45.123456",
+    "details": "some details",
+    "location": "some location",
+    "title": "some title"
+  }
+}

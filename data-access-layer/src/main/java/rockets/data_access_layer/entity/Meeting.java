@@ -1,14 +1,13 @@
 package rockets.data_access_layer.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -19,7 +18,26 @@ public class Meeting {
     String location;
     String details;
 
-    public UUID getId(UUID id) {
+    @ManyToMany(mappedBy = "meetings")
+    Set<Calendar> calendars = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "meeting_participant",
+            joinColumns = @JoinColumn(name = "meeting_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
+    Set<Participant> participants = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "meeting_attachment",
+            joinColumns = @JoinColumn(name = "meeting_id"),
+            inverseJoinColumns = @JoinColumn(name = "attachment_id")
+    )
+    Set<Attachment> attachments = new HashSet<>();
+
+    public UUID getId() {
         return this.id;
     }
 
@@ -57,5 +75,45 @@ public class Meeting {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public Set<Participant> getParticipants() {
+        return this.participants;
+    }
+
+    public void setParticipants(Set<Participant> participants) {
+        this.participants = participants;
+    }
+
+    public void addParticipants(List<Participant> participants) {
+        this.participants.addAll(participants);
+    }
+
+    public void removeParticipants(List<Participant> participants) {
+        participants.forEach(this.participants::remove);
+    }
+
+    public void addAttachments(List<Attachment> attachments) {
+        this.attachments.addAll(attachments);
+    }
+
+    public void removeAttachments(List<Attachment> attachments) {
+        attachments.forEach(this.attachments::remove);
+    }
+
+    public Set<Attachment> getAttachments() {
+        return this.attachments;
+    }
+
+    public void setAttachments(Set<Attachment> attachments) {
+        this.attachments = attachments;
+    }
+
+    public Set<Calendar> getCalendars() {
+        return calendars;
+    }
+
+    public void setCalendars(Set<Calendar> calendars) {
+        this.calendars = calendars;
     }
 }

@@ -1,13 +1,16 @@
 package rockets.data_access_layer.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Calendar {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -15,6 +18,14 @@ public class Calendar {
 
     String title;
     String details;
+
+    @ManyToMany
+    @JoinTable(
+            name = "calendar_meeting",
+            joinColumns = @JoinColumn(name = "calendar_id"),
+            inverseJoinColumns = @JoinColumn(name = "meeting_id")
+    )
+    Set<Meeting> meetings = new HashSet<>();
 
     public UUID getId() {
         return id;
@@ -38,5 +49,21 @@ public class Calendar {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public Set<Meeting> getMeetings() {
+        return this.meetings;
+    }
+
+    public void setMeetings(Set<Meeting> meetings) {
+        this.meetings = meetings;
+    }
+
+    public void addMeetings(List<Meeting> meetings) {
+        this.meetings.addAll(meetings);
+    }
+
+    public void removeMeetings(List<Meeting> meetings) {
+        meetings.forEach(this.meetings::remove);
     }
 }

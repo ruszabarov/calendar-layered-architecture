@@ -34,6 +34,20 @@ public class CalendarController {
         return calendarService.createCalendar(calendar);
     }
 
+    @PostMapping("/{id}/meetings")
+    public ResponseEntity<Calendar> addMeetingsToCalendar(@PathVariable UUID id, @RequestBody List<UUID> meetingIds) {
+        return calendarService.addMeetingsToCalendar(id, meetingIds)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}/meetings")
+    public ResponseEntity<Calendar> removeMeetingsFromCalendar(@PathVariable UUID id, @RequestBody List<UUID> meetingIds) {
+        return calendarService.removeMeetingsFromCalendar(id, meetingIds)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Calendar> updateCalendar(@PathVariable UUID id, @RequestBody Calendar calendar) {
         return calendarService.updateCalendar(id, calendar)

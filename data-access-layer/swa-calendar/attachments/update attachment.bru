@@ -1,0 +1,17 @@
+meta {
+  name: update attachment
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{BASE_URL}}/attachments/ebb10ab2-6e20-474b-af25-57715d9d9014
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "url": "http://newurl.com"
+  }
+}

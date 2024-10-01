@@ -1,0 +1,17 @@
+meta {
+  name: delete attachment
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{BASE_URL}}/attachments/ebb10ab2-6e20-474b-af25-57715d9d9014
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "url": "http://newurl.com"
+  }
+}

@@ -1,0 +1,18 @@
+meta {
+  name: get calendars
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{BASE_URL}}/calendars
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "title": "some title",
+    "details": "some details"
+  }
+}

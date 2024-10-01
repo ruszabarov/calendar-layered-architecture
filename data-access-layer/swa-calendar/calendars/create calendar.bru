@@ -1,0 +1,18 @@
+meta {
+  name: create calendar
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/calendars
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "some title",
+    "details": "some details"
+  }
+}

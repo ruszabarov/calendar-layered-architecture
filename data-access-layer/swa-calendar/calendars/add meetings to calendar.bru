@@ -1,0 +1,17 @@
+meta {
+  name: add meetings to calendar
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{BASE_URL}}/calendars/5d253359-fb5b-4b18-9d8f-5916c8a8be6a/meetings
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    "4212af9b-798f-42e5-a6cc-18da1b507fa6"
+  ]
+}

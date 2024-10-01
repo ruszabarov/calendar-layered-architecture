@@ -1,0 +1,18 @@
+meta {
+  name: create participant
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/participants
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Ruslan Zabarov",
+    "email": "rxz455@case.edu"
+  }
+}

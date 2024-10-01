@@ -1,0 +1,18 @@
+meta {
+  name: delete calendar
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{BASE_URL}}/calendars/21aa13c9-636f-40eb-9fba-d7e8848b409f
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "title": "some title",
+    "details": "some details"
+  }
+}

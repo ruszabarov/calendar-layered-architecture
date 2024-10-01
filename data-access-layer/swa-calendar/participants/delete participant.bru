@@ -1,0 +1,18 @@
+meta {
+  name: delete participant
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{BASE_URL}}/participants/c647597e-7de3-4f9b-9ab9-f16cfc4f7b37
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Ruslan Zabarov",
+    "email": "newemail@case.edu"
+  }
+}

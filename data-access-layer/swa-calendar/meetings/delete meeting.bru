@@ -1,0 +1,20 @@
+meta {
+  name: delete meeting
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{BASE_URL}}/meetings/a905b76d-79e4-4ebe-a817-176ccff3c3e5
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "date_time": "2024-10-01 14:30:45",
+    "details": "new details",
+    "location": "new location",
+    "title": "new title"
+  }
+}
