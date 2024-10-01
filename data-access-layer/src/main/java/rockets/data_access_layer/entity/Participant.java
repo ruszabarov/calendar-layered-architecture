@@ -3,6 +3,7 @@ package rockets.data_access_layer.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,10 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
+    @NotNull
+    @Column(nullable = false)
     String name;
+    
     String email;
 
     @ManyToMany(mappedBy = "participants")

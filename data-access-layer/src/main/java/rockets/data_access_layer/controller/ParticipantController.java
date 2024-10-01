@@ -29,12 +29,12 @@ public class ParticipantController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public Participant createParticipant(@RequestBody Participant participant) {
         return participantService.createParticipant(participant);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Participant> updateParticipant(@PathVariable UUID id, @RequestBody Participant participant) {
         return participantService.updateParticipant(id, participant)
                 .map(ResponseEntity::ok)

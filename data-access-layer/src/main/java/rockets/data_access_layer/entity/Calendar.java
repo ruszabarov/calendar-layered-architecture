@@ -3,6 +3,7 @@ package rockets.data_access_layer.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,8 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
+    @NotNull
+    @Column(nullable = false)
     String title;
     String details;
 

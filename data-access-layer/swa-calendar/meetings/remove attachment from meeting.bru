@@ -1,0 +1,17 @@
+meta {
+  name: remove attachment from meeting
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{BASE_URL}}/meetings/4212af9b-798f-42e5-a6cc-18da1b507fa6/attachments
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    "cc13c7a5-83f5-46ed-8823-6dcfa3945bfc"
+  ]
+}

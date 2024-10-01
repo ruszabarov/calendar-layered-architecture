@@ -29,40 +29,40 @@ public class MeetingController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public Meeting createMeeting(@RequestBody Meeting meeting) {
         return meetingService.createMeeting(meeting);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody Meeting meeting) {
         return meetingService.updateMeeting(id, meeting)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{id}/participants")
+    @PostMapping(value = "/{id}/participants", consumes = "application/json")
     public ResponseEntity<Meeting> addParticipantsToMeeting(@PathVariable UUID id, @RequestBody List<UUID> participantIds) {
         return meetingService.addParticipantsToMeeting(id, participantIds)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}/participants")
+    @DeleteMapping(value = "/{id}/participants", consumes = "application/json")
     public ResponseEntity<Meeting> removeParticipantsFromMeeting(@PathVariable UUID id, @RequestBody List<UUID> participantIds) {
         return meetingService.removeParticipantsFromMeeting(id, participantIds)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{id}/attachments")
+    @PostMapping(value = "/{id}/attachments", consumes = "application/json")
     public ResponseEntity<Meeting> addAttachmentsToMeeting(@PathVariable UUID id, @RequestBody List<UUID> attachmentIds) {
         return meetingService.addAttachmentToMeeting(id, attachmentIds)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}/attachments")
+    @DeleteMapping(value = "/{id}/attachments", consumes = "application/json")
     public ResponseEntity<Meeting> removeAttachmentstoMeeting(@PathVariable UUID id, @RequestBody List<UUID> attachmentIds) {
         return meetingService.removeAttachmentsFromMeeting(id, attachmentIds)
                 .map(ResponseEntity::ok)

@@ -29,12 +29,12 @@ public class AttachmentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public Attachment createAttachment(@RequestBody Attachment attachment) {
         return attachmentService.createAttachment(attachment);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Attachment> updateAttachment(@PathVariable UUID id, @RequestBody Attachment attachment) {
         return attachmentService.updateAttachment(id, attachment)
                 .map(ResponseEntity::ok)

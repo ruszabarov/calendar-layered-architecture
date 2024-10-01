@@ -3,6 +3,7 @@ package rockets.data_access_layer.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.*;
 
@@ -13,6 +14,8 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
+    @NotNull
+    @Column(nullable = false)
     String title;
     Date dateTime;
     String location;
