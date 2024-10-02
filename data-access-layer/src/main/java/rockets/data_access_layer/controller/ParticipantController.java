@@ -1,5 +1,6 @@
 package rockets.data_access_layer.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rockets.data_access_layer.entity.Participant;
@@ -30,22 +31,28 @@ public class ParticipantController {
     }
 
     @PostMapping(consumes = "application/json")
-    public Participant createParticipant(@RequestBody Participant participant) {
+    public ResponseEntity<Object> createParticipant(@RequestBody Participant participant) {
         participant.setName(Check.limitString(participant.getName(),600));
         if (!Check.isValidEmail(participant.getEmail())) {
-            // http error response
+            return ResponseEntity.badRequest().body("Invalid email address");
         }
-        return participantService.createParticipant(participant);
+        Participant createdParticipant = participantService.createParticipant(participant);
+        if (createdParticipant != null) {
+            return ResponseEntity.ok((Object) createdParticipant); // Return 200 with created meeting
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unable to create meeting"); // Return 500 with error message if creation fails
+        }
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Participant> updateParticipant(@PathVariable UUID id, @RequestBody Participant participant) {
+    public ResponseEntity<Object> updateParticipant(@PathVariable UUID id, @RequestBody Participant participant) {
         participant.setName(Check.limitString(participant.getName(),600));
         if (!Check.isValidEmail(participant.getEmail())) {
-            // http error response
+            return ResponseEntity.badRequest().body("Invalid email address");
         }
         return participantService.updateParticipant(id, participant)
-                .map(ResponseEntity::ok)
+                .map(updatedParticipant -> ResponseEntity.ok((Object) updatedParticipant))
                 .orElse(ResponseEntity.notFound().build());
     }
 

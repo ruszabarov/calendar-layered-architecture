@@ -31,27 +31,34 @@ public class MeetingController {
     }
 
     @PostMapping(consumes = "application/json")
-    public Meeting createMeeting(@RequestBody Meeting meeting) {
+    public ResponseEntity<Object> createMeeting(@RequestBody Meeting meeting) {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
         if (!Check.validateDateTime(meeting.getDateTime().toString())) {
-            // http error response
+            return ResponseEntity.badRequest().body("Invalid DateTime format"); // Return 400 with error message
         }
-        return meetingService.createMeeting(meeting);
+        // Attempt to create the meeting
+        Meeting createdMeeting = meetingService.createMeeting(meeting);
+        if (createdMeeting != null) {
+            return ResponseEntity.ok((Object) createdMeeting); // Return 200 with created meeting
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unable to create meeting"); // Return 500 with error message if creation fails
+        }
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody Meeting meeting) {
+    public ResponseEntity<Object> updateMeeting(@PathVariable UUID id, @RequestBody Meeting meeting) {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
         if (!Check.validateDateTime(meeting.getDateTime().toString())) {
-            // http error response
+            return ResponseEntity.badRequest().body("Invalid DateTime format"); // Return 400 with error message
         }
         return meetingService.updateMeeting(id, meeting)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(updatedMeeting -> ResponseEntity.ok((Object) updatedMeeting)) // Cast updatedMeeting to Object
+                .orElse(ResponseEntity.notFound().build()); // If not found, return 404 Not Found
     }
 
     @PostMapping(value = "/{id}/participants", consumes = "application/json")
