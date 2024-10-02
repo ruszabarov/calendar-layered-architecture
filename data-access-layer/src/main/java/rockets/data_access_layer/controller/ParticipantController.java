@@ -31,11 +31,19 @@ public class ParticipantController {
 
     @PostMapping(consumes = "application/json")
     public Participant createParticipant(@RequestBody Participant participant) {
+        participant.setName(Check.limitString(participant.getName(),600));
+        if (!Check.isValidEmail(participant.getEmail())) {
+            // http error response
+        }
         return participantService.createParticipant(participant);
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Participant> updateParticipant(@PathVariable UUID id, @RequestBody Participant participant) {
+        participant.setName(Check.limitString(participant.getName(),600));
+        if (!Check.isValidEmail(participant.getEmail())) {
+            // http error response
+        }
         return participantService.updateParticipant(id, participant)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

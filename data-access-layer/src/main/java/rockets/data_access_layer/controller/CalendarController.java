@@ -31,6 +31,8 @@ public class CalendarController {
 
     @PostMapping(consumes = "application/json")
     public Calendar createCalendar(@RequestBody Calendar calendar) {
+        calendar.setTitle(Check.limitString(calendar.getTitle(),2000));
+        calendar.setDetails(Check.limitString(calendar.getDetails(),10000));
         return calendarService.createCalendar(calendar);
     }
 
@@ -50,6 +52,8 @@ public class CalendarController {
 
     @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Calendar> updateCalendar(@PathVariable UUID id, @RequestBody Calendar calendar) {
+        calendar.setTitle(Check.limitString(calendar.getTitle(),2000));
+        calendar.setDetails(Check.limitString(calendar.getDetails(),10000));
         return calendarService.updateCalendar(id, calendar)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

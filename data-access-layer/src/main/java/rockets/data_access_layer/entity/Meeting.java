@@ -17,7 +17,7 @@ public class Meeting {
     @NotNull
     @Column(nullable = false)
     String title;
-    Date dateTime;
+    String dateTime;
     String location;
     String details;
 
@@ -56,11 +56,11 @@ public class Meeting {
         this.title = title;
     }
 
-    public Date getDateTime() {
+    public String getDateTime() {
         return this.dateTime;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(String dateTime) {
         this.dateTime = dateTime;
     }
 

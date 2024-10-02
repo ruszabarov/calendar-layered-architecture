@@ -31,11 +31,17 @@ public class AttachmentController {
 
     @PostMapping(consumes = "application/json")
     public Attachment createAttachment(@RequestBody Attachment attachment) {
+        if (!Check.isValidURL(attachment.getUrl())) {
+            // http error response
+        }
         return attachmentService.createAttachment(attachment);
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Attachment> updateAttachment(@PathVariable UUID id, @RequestBody Attachment attachment) {
+        if (!Check.isValidURL(attachment.getUrl())) {
+            // http error response
+        }
         return attachmentService.updateAttachment(id, attachment)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

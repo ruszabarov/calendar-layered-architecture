@@ -1,5 +1,6 @@
 package rockets.data_access_layer.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rockets.data_access_layer.entity.Meeting;
@@ -31,11 +32,23 @@ public class MeetingController {
 
     @PostMapping(consumes = "application/json")
     public Meeting createMeeting(@RequestBody Meeting meeting) {
+        meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
+        meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
+        meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
+        if (!Check.validateDateTime(meeting.getDateTime())) {
+            // http error response
+        }
         return meetingService.createMeeting(meeting);
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody Meeting meeting) {
+        meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
+        meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
+        meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
+        if (!Check.validateDateTime(meeting.getDateTime())) {
+            // http error response
+        }
         return meetingService.updateMeeting(id, meeting)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
