@@ -1,9 +1,8 @@
 package rockets.data_access_layer.controller;
 
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import rockets.data_access_layer.entity.Participant;
 import rockets.data_access_layer.service.ParticipantService;
 
@@ -32,28 +31,15 @@ public class ParticipantController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Participant> createParticipant(@RequestBody Participant participant) {
-        participant.setName(Check.limitString(participant.getName(),600));
-        if (!Check.isValidEmail(participant.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address");
-        }
-        Participant createdParticipant = participantService.createParticipant(participant);
-        if (createdParticipant != null) {
-            return ResponseEntity.ok(createdParticipant);
-        } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to create participant");
-        }
+    public Participant createParticipant(@RequestBody @Valid Participant participant) {
+        return participantService.createParticipant(participant);
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Participant> updateParticipant(@PathVariable UUID id, @RequestBody Participant participant) {
-        participant.setName(Check.limitString(participant.getName(),600));
-        if (!Check.isValidEmail(participant.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address");
-        }
+    public ResponseEntity<Participant> updateParticipant(@PathVariable UUID id, @RequestBody @Valid Participant participant) {
         return participantService.updateParticipant(id, participant)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

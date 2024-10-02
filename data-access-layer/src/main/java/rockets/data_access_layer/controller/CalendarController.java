@@ -1,5 +1,6 @@
 package rockets.data_access_layer.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rockets.data_access_layer.entity.Calendar;
@@ -30,9 +31,7 @@ public class CalendarController {
     }
 
     @PostMapping(consumes = "application/json")
-    public Calendar createCalendar(@RequestBody Calendar calendar) {
-        calendar.setTitle(Check.limitString(calendar.getTitle(),2000));
-        calendar.setDetails(Check.limitString(calendar.getDetails(),10000));
+    public Calendar createCalendar(@RequestBody @Valid Calendar calendar) {
         return calendarService.createCalendar(calendar);
     }
 
@@ -51,9 +50,7 @@ public class CalendarController {
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Calendar> updateCalendar(@PathVariable UUID id, @RequestBody Calendar calendar) {
-        calendar.setTitle(Check.limitString(calendar.getTitle(),2000));
-        calendar.setDetails(Check.limitString(calendar.getDetails(),10000));
+    public ResponseEntity<Calendar> updateCalendar(@PathVariable UUID id, @RequestBody @Valid Calendar calendar) {
         return calendarService.updateCalendar(id, calendar)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

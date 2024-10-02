@@ -12,6 +12,8 @@ import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.service.MeetingService;
 import rockets.data_access_layer.util.Utility;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
@@ -44,7 +46,7 @@ public class MeetingControllerTest {
         UUID randomId1 = UUID.randomUUID();
         meeting1.setId(randomId1);
         meeting1.setTitle("Meeting 1");
-        meeting1.setDateTime(new Date());
+        meeting1.setDateTime(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
         meeting1.setLocation("Location 1");
         meeting1.setDetails("Details 1");
 
@@ -52,7 +54,7 @@ public class MeetingControllerTest {
         UUID randomId2 = UUID.randomUUID();
         meeting2.setId(randomId2);
         meeting2.setTitle("Meeting 2");
-        meeting2.setDateTime(new Date());
+        meeting2.setDateTime(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
         meeting2.setLocation("Location 2");
         meeting2.setDetails("Details 2");
 
@@ -72,7 +74,7 @@ public class MeetingControllerTest {
         UUID randomId = UUID.randomUUID();
         meeting.setId(randomId);
         meeting.setTitle("Meeting Title");
-        meeting.setDateTime(new Date());
+        meeting.setDateTime(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
         meeting.setLocation("Meeting Location");
         meeting.setDetails("Meeting Details");
 
@@ -103,7 +105,7 @@ public class MeetingControllerTest {
         UUID randomId = UUID.randomUUID();
         newMeeting.setId(randomId);
         newMeeting.setTitle("New Meeting");
-        newMeeting.setDateTime(new Date());
+        newMeeting.setDateTime(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
         newMeeting.setLocation("New Location");
         newMeeting.setDetails("New Details");
 
@@ -125,13 +127,13 @@ public class MeetingControllerTest {
         Meeting existingMeeting = new Meeting();
         existingMeeting.setId(randomId);
         existingMeeting.setTitle("Old Title");
-        existingMeeting.setDateTime(new Date());
+        existingMeeting.setDateTime(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
         existingMeeting.setLocation("Old Location");
         existingMeeting.setDetails("Old Details");
 
         Meeting updatedMeeting = new Meeting();
         updatedMeeting.setTitle("Updated Title");
-        updatedMeeting.setDateTime(new Date());
+        updatedMeeting.setDateTime(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
         updatedMeeting.setLocation("Updated Location");
         updatedMeeting.setDetails("Updated Details");
 
@@ -152,7 +154,7 @@ public class MeetingControllerTest {
 
         Meeting updatedMeeting = new Meeting();
         updatedMeeting.setTitle("Updated Title");
-        updatedMeeting.setDateTime(new Date());
+        updatedMeeting.setDateTime(Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
         updatedMeeting.setLocation("Updated Location");
         updatedMeeting.setDetails("Updated Details");
 

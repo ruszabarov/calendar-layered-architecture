@@ -1,9 +1,8 @@
 package rockets.data_access_layer.controller;
 
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import rockets.data_access_layer.entity.Attachment;
 import rockets.data_access_layer.service.AttachmentService;
 
@@ -32,26 +31,15 @@ public class AttachmentController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Attachment> createAttachment(@RequestBody Attachment attachment) {
-        if (!Check.isValidURL(attachment.getUrl())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL");
-        }
-        Attachment createdAttachment = attachmentService.createAttachment(attachment);
-        if (createdAttachment != null) {
-            return ResponseEntity.ok(createdAttachment); // Return 200 with created meeting
-        } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to create attachment");
-        }
+    public Attachment createAttachment(@RequestBody Attachment attachment) {
+        return attachmentService.createAttachment(attachment);
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Attachment> updateAttachment(@PathVariable UUID id, @RequestBody Attachment attachment) {
-        if (!Check.isValidURL(attachment.getUrl())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL");
-        }
+    public ResponseEntity<Attachment> updateAttachment(@PathVariable UUID id, @RequestBody @Valid Attachment attachment) {
         return attachmentService.updateAttachment(id, attachment)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment not found"));
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

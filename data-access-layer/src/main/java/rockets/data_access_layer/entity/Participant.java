@@ -3,7 +3,8 @@ package rockets.data_access_layer.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,10 +17,11 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-    @NotNull
+    @Size(min = 1, max = 600, message = "name should be between 1 and 600 characters")
     @Column(nullable = false)
     String name;
-    
+
+    @Email(message = "email should be valid")
     String email;
 
     @ManyToMany(mappedBy = "participants")

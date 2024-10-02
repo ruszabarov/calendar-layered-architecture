@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Size;
 
 import java.util.*;
 
@@ -15,13 +16,16 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-    @NotNull
+    @Size(min = 1, max = 2000, message = "title should be between 1 and 2000 characters")
     @Column(nullable = false)
     String title;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @FutureOrPresent(message = "dateTime should be in the future or present")
     Date dateTime;
     String location;
+
+    @Size(max = 10000)
     String details;
 
     @ManyToMany(mappedBy = "meetings")

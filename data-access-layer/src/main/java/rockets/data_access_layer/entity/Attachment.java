@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.URL;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +19,7 @@ public class Attachment {
     private UUID id;
 
     @NotNull
+    @URL
     @Column(nullable = false)
     private String url;
 

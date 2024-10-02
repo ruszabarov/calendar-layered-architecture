@@ -3,7 +3,9 @@ package rockets.data_access_layer.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,8 +20,12 @@ public class Calendar {
     UUID id;
 
     @NotNull
+    @NotEmpty
+    @Size(max = 2000)
     @Column(nullable = false)
     String title;
+
+    @Size(max = 10000)
     String details;
 
     @ManyToMany

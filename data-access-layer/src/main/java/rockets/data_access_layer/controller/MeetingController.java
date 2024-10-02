@@ -1,10 +1,8 @@
 package rockets.data_access_layer.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.service.MeetingService;
 
@@ -33,27 +31,15 @@ public class MeetingController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Meeting> createMeeting(@RequestBody @Valid Meeting meeting) {
-        meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
-        meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
-        meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
-        // Attempt to create the meeting
-        Meeting createdMeeting = meetingService.createMeeting(meeting);
-        if (createdMeeting != null) {
-            return ResponseEntity.ok(createdMeeting); // Return 200 with created meeting
-        } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to create meeting");
-        }
+    public Meeting createMeeting(@RequestBody @Valid Meeting meeting) {
+        return meetingService.createMeeting(meeting);
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody @Valid Meeting meeting) {
-        meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
-        meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
-        meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
         return meetingService.updateMeeting(id, meeting)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Meeting not found"));
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/{id}/participants", consumes = "application/json")
