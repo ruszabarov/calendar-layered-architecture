@@ -1,5 +1,6 @@
 package rockets.data_access_layer.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -17,6 +18,8 @@ public class Meeting {
     @NotNull
     @Column(nullable = false)
     String title;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     Date dateTime;
     String location;
     String details;
