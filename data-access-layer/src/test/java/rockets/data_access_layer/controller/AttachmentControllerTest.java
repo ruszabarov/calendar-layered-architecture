@@ -91,7 +91,7 @@ public class AttachmentControllerTest {
         Attachment newAttachment = new Attachment();
         UUID randomId = UUID.randomUUID();
         newAttachment.setId(randomId);
-        newAttachment.setUrl("some-url");
+        newAttachment.setUrl("http://some-url.com");
 
         when(attachmentService.createAttachment(any(Attachment.class))).thenReturn(newAttachment);
 
@@ -99,7 +99,7 @@ public class AttachmentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(Utility.asJsonString(newAttachment)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").value("some-url"));
+                .andExpect(jsonPath("$.url").value("http://some-url.com"));
 
         verify(attachmentService, times(1)).createAttachment(any(Attachment.class));
     }
@@ -112,7 +112,7 @@ public class AttachmentControllerTest {
         existingAttachment.setUrl("some-url");
 
         Attachment updatedAttachment = new Attachment();
-        updatedAttachment.setUrl("new-url");
+        updatedAttachment.setUrl("http://new-url.com");
 
         when(attachmentService.updateAttachment(eq(randomId), any(Attachment.class))).thenReturn(Optional.of(updatedAttachment));
 
@@ -120,7 +120,7 @@ public class AttachmentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(Utility.asJsonString(updatedAttachment)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").value("new-url"));
+                .andExpect(jsonPath("$.url").value("http://new-url.com"));
 
         verify(attachmentService, times(1)).updateAttachment(eq(randomId), any(Attachment.class));
     }
@@ -129,7 +129,7 @@ public class AttachmentControllerTest {
     void testUpdateAttachmentNotFound() throws Exception {
         UUID randomId = UUID.randomUUID();
         Attachment wrongAttachment = new Attachment();
-        wrongAttachment.setUrl("new-url");
+        wrongAttachment.setUrl("http://new-url.com");
 
         when(attachmentService.updateAttachment(eq(randomId), any(Attachment.class))).thenReturn(Optional.empty());
 

@@ -1,5 +1,6 @@
 package rockets.data_access_layer.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +33,10 @@ public class MeetingController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Meeting> createMeeting(@RequestBody Meeting meeting) {
+    public ResponseEntity<Meeting> createMeeting(@RequestBody @Valid Meeting meeting) {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
-        if (!Check.validateDateTime(meeting.getDateTime().toString())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date time format");
-        }
         // Attempt to create the meeting
         Meeting createdMeeting = meetingService.createMeeting(meeting);
         if (createdMeeting != null) {
@@ -49,13 +47,10 @@ public class MeetingController {
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody Meeting meeting) {
+    public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody @Valid Meeting meeting) {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
-        if (!Check.validateDateTime(meeting.getDateTime().toString())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date time format");
-        }
         return meetingService.updateMeeting(id, meeting)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Meeting not found"));

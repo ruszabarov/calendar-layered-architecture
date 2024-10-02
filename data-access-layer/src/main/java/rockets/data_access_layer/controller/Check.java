@@ -1,51 +1,10 @@
 package rockets.data_access_layer.controller;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class Check {
-
-    // Validates if a list is empty or not of a generic type
-    public static <T> boolean validateList(List<T> list) {
-        return list != null && !list.isEmpty();
-    }
-
-    // Validates the list of UUID (Meetings, Participants, Attachments)
-    public static boolean validateUUIDList(List<UUID> uuidList) {
-        return uuidList != null && !uuidList.isEmpty();
-    }
-
-    // Strings:
-    // Validates if a string is empty
-    public static boolean validateString(String input) {
-        return input != null && !input.trim().isEmpty();
-    }
-
-    // Date and Time
-    public static boolean validateDateTimeFormat(String dateTime) {
-        if (!validateString(dateTime)) {
-            return false;
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        try {
-            LocalDateTime.parse(dateTime, formatter);
-            return true;
-        } catch (DateTimeParseException e) {
-            return false;
-        }
-    }
-
-    // Validates if the given input is a string in the proper format
-    public static boolean validateDateTime(String dateTime) {
-        return validateString(dateTime) && validateDateTimeFormat(dateTime);
-    }
 
     // RETURNS A STRING
     // Trims the string to the limit
