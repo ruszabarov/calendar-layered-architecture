@@ -3,6 +3,7 @@ package rockets.data_access_layer.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import rockets.data_access_layer.entity.Attachment;
 import rockets.data_access_layer.service.AttachmentService;
 
@@ -31,27 +32,26 @@ public class AttachmentController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Object> createAttachment(@RequestBody Attachment attachment) {
+    public ResponseEntity<Attachment> createAttachment(@RequestBody Attachment attachment) {
         if (!Check.isValidURL(attachment.getUrl())) {
-            return ResponseEntity.badRequest().body("Invalid URL");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL");
         }
         Attachment createdAttachment = attachmentService.createAttachment(attachment);
         if (createdAttachment != null) {
-            return ResponseEntity.ok((Object) createdAttachment); // Return 200 with created meeting
+            return ResponseEntity.ok(createdAttachment); // Return 200 with created meeting
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Unable to create meeting"); // Return 500 with error message if creation fails
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to create attachment");
         }
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Object> updateAttachment(@PathVariable UUID id, @RequestBody Attachment attachment) {
+    public ResponseEntity<Attachment> updateAttachment(@PathVariable UUID id, @RequestBody Attachment attachment) {
         if (!Check.isValidURL(attachment.getUrl())) {
-            return ResponseEntity.badRequest().body("Invalid URL");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL");
         }
         return attachmentService.updateAttachment(id, attachment)
-                .map(updatedAttachment -> ResponseEntity.ok((Object) updatedAttachment))
-                .orElse(ResponseEntity.notFound().build());
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment not found"));
     }
 
     @DeleteMapping("/{id}")

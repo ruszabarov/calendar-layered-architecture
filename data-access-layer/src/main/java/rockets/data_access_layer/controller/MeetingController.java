@@ -3,6 +3,7 @@ package rockets.data_access_layer.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.service.MeetingService;
 
@@ -31,34 +32,33 @@ public class MeetingController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Object> createMeeting(@RequestBody Meeting meeting) {
+    public ResponseEntity<Meeting> createMeeting(@RequestBody Meeting meeting) {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
         if (!Check.validateDateTime(meeting.getDateTime().toString())) {
-            return ResponseEntity.badRequest().body("Invalid DateTime format"); // Return 400 with error message
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date time format");
         }
         // Attempt to create the meeting
         Meeting createdMeeting = meetingService.createMeeting(meeting);
         if (createdMeeting != null) {
-            return ResponseEntity.ok((Object) createdMeeting); // Return 200 with created meeting
+            return ResponseEntity.ok(createdMeeting); // Return 200 with created meeting
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Unable to create meeting"); // Return 500 with error message if creation fails
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to create meeting");
         }
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Object> updateMeeting(@PathVariable UUID id, @RequestBody Meeting meeting) {
+    public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody Meeting meeting) {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
         if (!Check.validateDateTime(meeting.getDateTime().toString())) {
-            return ResponseEntity.badRequest().body("Invalid DateTime format"); // Return 400 with error message
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date time format");
         }
         return meetingService.updateMeeting(id, meeting)
-                .map(updatedMeeting -> ResponseEntity.ok((Object) updatedMeeting)) // Cast updatedMeeting to Object
-                .orElse(ResponseEntity.notFound().build()); // If not found, return 404 Not Found
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Meeting not found"));
     }
 
     @PostMapping(value = "/{id}/participants", consumes = "application/json")
