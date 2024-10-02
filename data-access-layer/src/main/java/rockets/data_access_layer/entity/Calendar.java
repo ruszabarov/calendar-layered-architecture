@@ -3,8 +3,6 @@ package rockets.data_access_layer.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
@@ -19,13 +17,11 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-    @NotNull
-    @NotEmpty
-    @Size(max = 2000)
+    @Size(min = 1, max = 2000, message = "title should be between 1 and 2000 characters")
     @Column(nullable = false)
     String title;
 
-    @Size(max = 10000)
+    @Size(max = 10000, message = "length of details should not exceed 10000 characters")
     String details;
 
     @ManyToMany

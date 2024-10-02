@@ -25,7 +25,7 @@ public class Meeting {
     Date dateTime;
     String location;
 
-    @Size(max = 10000)
+    @Size(max = 10000, message = "length of details should not exceed 10000 characters")
     String details;
 
     @ManyToMany(mappedBy = "meetings")

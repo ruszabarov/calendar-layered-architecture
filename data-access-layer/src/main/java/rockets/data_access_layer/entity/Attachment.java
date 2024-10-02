@@ -19,7 +19,7 @@ public class Attachment {
     private UUID id;
 
     @NotNull
-    @URL
+    @URL(message = "url should be valid")
     @Column(nullable = false)
     private String url;
 
