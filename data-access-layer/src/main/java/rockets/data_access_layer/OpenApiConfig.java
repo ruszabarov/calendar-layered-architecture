@@ -11,7 +11,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Calender API")
+                .info(new Info().title("Calendar API")
                         .version("1.0")
                         .description("API documentation for my Spring Boot application"));
     }
