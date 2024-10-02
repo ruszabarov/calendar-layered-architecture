@@ -59,11 +59,11 @@ public class Meeting {
         this.title = title;
     }
 
-    public String getDateTime() {
+    public Date getDateTime() {
         return this.dateTime;
     }
 
-    public void setDateTime(String dateTime) {
+    public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
     }
 

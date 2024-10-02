@@ -35,7 +35,7 @@ public class MeetingController {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
-        if (!Check.validateDateTime(meeting.getDateTime())) {
+        if (!Check.validateDateTime(meeting.getDateTime().toString())) {
             // http error response
         }
         return meetingService.createMeeting(meeting);
@@ -46,7 +46,7 @@ public class MeetingController {
         meeting.setTitle(Check.limitString(meeting.getTitle(), 2000));
         meeting.setLocation(Check.limitString(meeting.getLocation(), 2000));
         meeting.setDetails(Check.limitString(meeting.getDetails(), 10000));
-        if (!Check.validateDateTime(meeting.getDateTime())) {
+        if (!Check.validateDateTime(meeting.getDateTime().toString())) {
             // http error response
         }
         return meetingService.updateMeeting(id, meeting)
