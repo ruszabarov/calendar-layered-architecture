@@ -8,13 +8,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import rockets.data_access_layer.dto.CalendarDTO;
 import rockets.data_access_layer.entity.Calendar;
+import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.service.CalendarService;
+import rockets.data_access_layer.service.MeetingService;
 import rockets.data_access_layer.util.Utility;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -24,6 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CalendarControllerTest {
     @Mock
     CalendarService calendarService;
+
+    @Mock
+    MeetingService meetingService;
 
     @InjectMocks
     CalendarController calendarController;
@@ -91,51 +95,58 @@ public class CalendarControllerTest {
 
     @Test
     void testCreateCalendar() throws Exception {
-        Calendar newCalendar = new Calendar();
-        newCalendar.setTitle("New Calendar");
-        newCalendar.setDetails("New Details");
+        CalendarDTO calendarDTO = new CalendarDTO();
+        calendarDTO.setId(UUID.randomUUID());
+        calendarDTO.setTitle("New Calendar");
+        calendarDTO.setDetails("New Details");
 
-        Calendar savedCalendar = new Calendar();
-        UUID randomId = UUID.randomUUID();
-        savedCalendar.setId(randomId);
-        savedCalendar.setTitle("New Calendar");
-        savedCalendar.setDetails("New Details");
+        Calendar createdCalendar = new Calendar();
+        createdCalendar.setId(calendarDTO.getId());
+        createdCalendar.setTitle(calendarDTO.getTitle());
+        createdCalendar.setDetails(calendarDTO.getDetails());
 
-        when(calendarService.createCalendar(any(Calendar.class))).thenReturn(savedCalendar);
+        Meeting meeting = new Meeting();
+        meeting.setId(UUID.randomUUID());
+        meeting.setTitle("some meeting title");
+
+        createdCalendar.addMeetings(List.of(meeting));
+
+        when(calendarService.createCalendar(any(Calendar.class))).thenReturn(createdCalendar);
+        when(meetingService.getAllMeetingsByIds(anySet())).thenReturn(List.of(meeting));
 
         mockMvc.perform(post("/calendars")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(Utility.asJsonString(newCalendar)))
+                        .content(Utility.asJsonString(calendarDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("New Calendar"))
-                .andExpect(jsonPath("$.id").value(randomId.toString()));
+                .andExpect(jsonPath("$.id").value(calendarDTO.getId().toString()));
 
         verify(calendarService, times(1)).createCalendar(any(Calendar.class));
     }
 
     @Test
     void testUpdateCalendar() throws Exception {
-        UUID randomId = UUID.randomUUID();
+        CalendarDTO calendarDTO = new CalendarDTO();
+        calendarDTO.setId(UUID.randomUUID());
+        calendarDTO.setTitle("Updated Title");
+        calendarDTO.setDetails("Updated Details");
 
         Calendar updatedCalendar = new Calendar();
-        updatedCalendar.setTitle("Updated Title");
-        updatedCalendar.setDetails("Updated Details");
+        updatedCalendar.setId(calendarDTO.getId());
+        updatedCalendar.setTitle(calendarDTO.getTitle());
+        updatedCalendar.setDetails(calendarDTO.getDetails());
+        updatedCalendar.setMeetings(new HashSet<>(List.of(new Meeting())));
 
-        Calendar savedCalendar = new Calendar();
-        savedCalendar.setId(randomId);
-        savedCalendar.setTitle("Updated Title");
-        savedCalendar.setDetails("Updated Details");
+        when(calendarService.updateCalendar(any(UUID.class), any(Calendar.class))).thenReturn(Optional.of(updatedCalendar));
 
-        when(calendarService.updateCalendar(eq(randomId), any(Calendar.class))).thenReturn(Optional.of(savedCalendar));
-
-        mockMvc.perform(put("/calendars/{id}", randomId)
+        mockMvc.perform(put("/calendars/{id}", calendarDTO.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(Utility.asJsonString(updatedCalendar)))
+                        .content(Utility.asJsonString(calendarDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Updated Title"))
-                .andExpect(jsonPath("$.id").value(randomId.toString()));
+                .andExpect(jsonPath("$.details").value("Updated Details"));
 
-        verify(calendarService, times(1)).updateCalendar(eq(randomId), any(Calendar.class));
+        verify(calendarService, times(1)).updateCalendar(eq(calendarDTO.getId()), any(Calendar.class));
     }
 
     @Test

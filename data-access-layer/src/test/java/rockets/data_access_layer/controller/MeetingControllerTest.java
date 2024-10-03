@@ -9,15 +9,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import rockets.data_access_layer.entity.Meeting;
+import rockets.data_access_layer.entity.Participant;
 import rockets.data_access_layer.service.MeetingService;
+import rockets.data_access_layer.service.ParticipantService;
 import rockets.data_access_layer.util.Utility;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -28,6 +27,9 @@ public class MeetingControllerTest {
 
     @Mock
     MeetingService meetingService;
+
+    @Mock
+    ParticipantService participantService;
 
     @InjectMocks
     MeetingController meetingController;
@@ -109,7 +111,15 @@ public class MeetingControllerTest {
         newMeeting.setLocation("New Location");
         newMeeting.setDetails("New Details");
 
+        Participant participant = new Participant();
+        participant.setId(UUID.randomUUID());
+        participant.setName("Ruslan");
+        participant.setEmail("rxz455@case.edu");
+
+        newMeeting.addParticipants(List.of(participant));
+
         when(meetingService.createMeeting(any(Meeting.class))).thenReturn(newMeeting);
+        when(participantService.getAllParticipantsByIds(anySet())).thenReturn(List.of(participant));
 
         mockMvc.perform(post("/meetings")
                         .contentType(MediaType.APPLICATION_JSON)

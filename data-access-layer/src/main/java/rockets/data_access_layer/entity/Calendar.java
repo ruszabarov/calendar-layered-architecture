@@ -1,6 +1,7 @@
 package rockets.data_access_layer.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -24,12 +25,14 @@ public class Calendar {
     @Size(max = 10000, message = "length of details should not exceed 10000 characters")
     String details;
 
+    @Size(min = 1, message = "At least one meeting is required")
     @ManyToMany
     @JoinTable(
             name = "calendar_meeting",
             joinColumns = @JoinColumn(name = "calendar_id"),
             inverseJoinColumns = @JoinColumn(name = "meeting_id")
     )
+    @JsonIgnoreProperties("calendars")
     Set<Meeting> meetings = new HashSet<>();
 
     public UUID getId() {

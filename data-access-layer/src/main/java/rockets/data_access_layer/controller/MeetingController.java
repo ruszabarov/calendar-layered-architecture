@@ -3,8 +3,11 @@ package rockets.data_access_layer.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rockets.data_access_layer.dto.MeetingDTO;
 import rockets.data_access_layer.entity.Meeting;
+import rockets.data_access_layer.entity.Participant;
 import rockets.data_access_layer.service.MeetingService;
+import rockets.data_access_layer.service.ParticipantService;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,9 +16,11 @@ import java.util.UUID;
 @RequestMapping("/meetings")
 public class MeetingController {
     private final MeetingService meetingService;
+    private final ParticipantService participantService;
 
-    public MeetingController(MeetingService meetingService) {
+    public MeetingController(MeetingService meetingService, ParticipantService participantService) {
         this.meetingService = meetingService;
+        this.participantService = participantService;
     }
 
     @GetMapping
@@ -31,12 +36,28 @@ public class MeetingController {
     }
 
     @PostMapping(consumes = "application/json")
-    public Meeting createMeeting(@RequestBody @Valid Meeting meeting) {
+    public Meeting createMeeting(@RequestBody @Valid MeetingDTO meetingDTO) {
+        Meeting meeting = new Meeting();
+        meeting.setId(meetingDTO.getId());
+        meeting.setTitle(meetingDTO.getTitle());
+        meeting.setDetails(meetingDTO.getDetails());
+        meeting.setDateTime(meetingDTO.getDateTime());
+        meeting.setLocation(meeting.getLocation());
+
+        List<Participant> participants = participantService.getAllParticipantsByIds(meetingDTO.getParticipantIds());
+        meeting.addParticipants(participants);
+
         return meetingService.createMeeting(meeting);
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody @Valid Meeting meeting) {
+    public ResponseEntity<Meeting> updateMeeting(@PathVariable UUID id, @RequestBody @Valid MeetingDTO meetingDTO) {
+        Meeting meeting = new Meeting();
+        meeting.setId(meetingDTO.getId());
+        meeting.setTitle(meetingDTO.getTitle());
+        meeting.setDetails(meetingDTO.getDetails());
+        meeting.setDateTime(meetingDTO.getDateTime());
+
         return meetingService.updateMeeting(id, meeting)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

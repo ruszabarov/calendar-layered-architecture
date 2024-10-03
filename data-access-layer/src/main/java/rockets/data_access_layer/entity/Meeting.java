@@ -1,11 +1,12 @@
 package rockets.data_access_layer.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class Meeting {
     @Column(nullable = false)
     String title;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @FutureOrPresent(message = "dateTime should be in the future or present")
     Date dateTime;
     String location;
@@ -31,12 +32,14 @@ public class Meeting {
     @ManyToMany(mappedBy = "meetings")
     Set<Calendar> calendars = new HashSet<>();
 
+    @Size(min = 1, message = "At least one participant is required")
     @ManyToMany
     @JoinTable(
             name = "meeting_participant",
             joinColumns = @JoinColumn(name = "meeting_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
+    @JsonIgnoreProperties("meetings")
     Set<Participant> participants = new HashSet<>();
 
     @ManyToMany

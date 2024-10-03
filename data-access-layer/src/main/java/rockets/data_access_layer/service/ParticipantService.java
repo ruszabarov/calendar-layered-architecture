@@ -6,6 +6,7 @@ import rockets.data_access_layer.repository.ParticipantRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -18,6 +19,10 @@ public class ParticipantService {
 
     public List<Participant> getAllParticipants() {
         return this.participantRepository.findAll();
+    }
+
+    public List<Participant> getAllParticipantsByIds(Set<UUID> participantIds) {
+        return participantRepository.findAllById(participantIds);
     }
 
     public Optional<Participant> getParticipantById(UUID id) {

@@ -1,6 +1,7 @@
 package rockets.data_access_layer.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -25,6 +26,7 @@ public class Participant {
     String email;
 
     @ManyToMany(mappedBy = "participants")
+    @JsonIgnore
     Set<Meeting> meetings = new HashSet<>();
 
     public UUID getId() {

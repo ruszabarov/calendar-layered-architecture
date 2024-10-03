@@ -10,6 +10,7 @@ import rockets.data_access_layer.repository.ParticipantRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,10 @@ public class MeetingService {
 
     public List<Meeting> getAllMeetings() {
         return meetingRepository.findAll();
+    }
+
+    public List<Meeting> getAllMeetingsByIds(Set<UUID> meetingIds) {
+        return meetingRepository.findAllById(meetingIds);
     }
 
     public Optional<Meeting> getMeetingById(UUID id) {

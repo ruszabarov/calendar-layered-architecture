@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import rockets.data_access_layer.entity.Calendar;
+import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.repository.CalendarRepository;
 
 import java.util.Arrays;
@@ -79,6 +80,9 @@ public class CalendarServiceTest {
         newCalendar.setId(randomId);
         newCalendar.setTitle("New Calendar");
         newCalendar.setDetails("New Details");
+
+        List<Meeting> meetings = List.of(new Meeting());
+        newCalendar.addMeetings(meetings);
 
         when(calendarRepository.save(any(Calendar.class))).thenReturn(newCalendar);
 
