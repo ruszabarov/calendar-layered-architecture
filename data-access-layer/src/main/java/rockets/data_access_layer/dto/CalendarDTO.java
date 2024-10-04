@@ -9,6 +9,7 @@ import java.util.UUID;
 public class CalendarDTO {
     private UUID id;
 
+    @NotNull(message = "title can not be null")
     @Size(min = 1, max = 2000, message = "Title should be between 1 and 2000 characters")
     @NotNull(message = "Title is required")
     private String title;

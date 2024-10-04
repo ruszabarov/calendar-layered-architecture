@@ -2,6 +2,7 @@ package rockets.data_access_layer.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.UUID;
 public class MeetingDTO {
     UUID id;
 
+    @NotNull(message = "title can not be null")
     @Size(min = 1, max = 2000, message = "title should be between 1 and 2000 characters")
     String title;
 
