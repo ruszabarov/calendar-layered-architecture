@@ -3,17 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 import './Home.css';
 
 const Home = () => {
-    // Starts the user off on Meetings but can be switched to the other tabs
-    // ex. Calendars, Participants, Attachments
     const [currentTab, setCurrentTab] = useState('Meetings');
-
-    // State for each entity
     const [meetings, setMeetings] = useState([]);
     const [calendars, setCalendars] = useState([]);
     const [participants, setParticipants] = useState([]);
     const [attachments, setAttachments] = useState([]);
 
-    // Use States
     const [inputData, setInputData] = useState({
         uuid: '',
         title: '',
@@ -23,64 +18,65 @@ const Home = () => {
         participantName: '',
         participantEmail: '',
         attachmentUrl: '',
-        meetingId: ''
+        meetingId: '',
+        calendarIds: '',
+        participantIds: '',
+        attachmentIds: '',
+        meetingIds: '',
     });
 
-    // New states to handle update mode and tracking which item is being edited
     const [isEditing, setIsEditing] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
 
-    // Handle input changes
     const handleInputChange = (e) => {
         setInputData({ ...inputData, [e.target.name]: e.target.value });
     };
 
-    // Validation for each tab based on rules
+    // Validations
     const validateInputs = () => {
-        // Ensures that the title is not more than 2000 characters
-        // Ensures that the Date and Time is in YYYY-MM-DD HH:MM AM/PM form (not fully sure how it works but it does)
-        // Ensures that location is not more than 2000 characters
-        // Ensures that details is not more than 10000 characters
+        // Ensures meeting validations are correct
         if (currentTab === 'Meetings') {
-            return inputData.title.length <= 2000 &&
-                inputData.dateTime.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2} (AM|PM)/) &&
+            // not sure how DATE/TIME works but it does
+            return (
+                inputData.title.length <= 2000 &&
+                /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} (AM|PM)$/.test(inputData.dateTime) &&
                 inputData.location.length <= 2000 &&
-                inputData.details.length <= 10000;
+                inputData.details.length <= 10000
+            );
         }
-        // Ensures that the title is not more than 2000 characters
-        // Ensures that the details is not more than 10000 characters
+        // Ensures calendar validations are correct
         if (currentTab === 'Calendars') {
             return inputData.title.length <= 2000 && inputData.details.length <= 10000;
         }
-        // Ensures that the name of the participant is not more than 600 characters
+        // Ensures participant validations are correct
         if (currentTab === 'Participants') {
-            return inputData.participantName.length <= 600 &&
-                /\S+@\S+\.\S+/.test(inputData.participantEmail);
+            return (
+                inputData.participantName.length <= 600 &&
+                /\S+@\S+\.\S+/.test(inputData.participantEmail)
+            );
         }
-        // Ensures that it is a URL
+        // Ensures attachments are URLs
         if (currentTab === 'Attachments') {
             return inputData.attachmentUrl.startsWith('http');
         }
         return true;
     };
 
-    // CRUD functions
-    // Gives an alert if there is an error
+    // Creates form if validations are met
     const handleCreate = () => {
         if (!validateInputs()) {
             alert('Invalid input values. Please correct the errors.');
             return;
         }
-
         const newItem = { ...inputData, uuid: inputData.uuid || uuidv4() };
         if (currentTab === 'Meetings') setMeetings([...meetings, newItem]);
         if (currentTab === 'Calendars') setCalendars([...calendars, newItem]);
         if (currentTab === 'Participants') setParticipants([...participants, newItem]);
         if (currentTab === 'Attachments') setAttachments([...attachments, newItem]);
-        resetForm();  // Resets the form
+        resetForm();
     };
 
-    // Deletes the current 'record'
+    // Deletes on delete button
     const handleDelete = (index) => {
         if (currentTab === 'Meetings') setMeetings(meetings.filter((_, i) => i !== index));
         if (currentTab === 'Calendars') setCalendars(calendars.filter((_, i) => i !== index));
@@ -88,7 +84,7 @@ const Home = () => {
         if (currentTab === 'Attachments') setAttachments(attachments.filter((_, i) => i !== index));
     };
 
-    // Handles the update
+    // Allows for edits
     const handleEdit = (index) => {
         setIsEditing(true);
         setEditIndex(index);
@@ -98,21 +94,22 @@ const Home = () => {
         if (currentTab === 'Attachments') setInputData(attachments[index]);
     };
 
-    // Updates the edited record
+    // Updates only if valid inputs
     const handleUpdate = () => {
         if (!validateInputs()) {
             alert('Invalid input values. Please correct the errors.');
             return;
         }
 
-        // Updates meetings
+        // Props for the input data
         const updatedItem = { ...inputData };
+        // Meetings
         if (currentTab === 'Meetings') {
             const updatedMeetings = [...meetings];
             updatedMeetings[editIndex] = updatedItem;
             setMeetings(updatedMeetings);
         }
-        // Updates calendars
+        // Calendars
         if (currentTab === 'Calendars') {
             const updatedCalendars = [...calendars];
             updatedCalendars[editIndex] = updatedItem;
@@ -130,19 +127,34 @@ const Home = () => {
             updatedAttachments[editIndex] = updatedItem;
             setAttachments(updatedAttachments);
         }
-        resetForm();  // Resets the form after updating
+        resetForm();
     };
 
-    // Resets the form and editing state
+    // Resets the form on 'create' or 'save changes'
     const resetForm = () => {
-        setInputData({ uuid: '', title: '', details: '', dateTime: '', location: '', participantName: '', participantEmail: '', attachmentUrl: '', meetingId: '' });
+        setInputData({
+            uuid: '',
+            title: '',
+            details: '',
+            dateTime: '',
+            location: '',
+            participantName: '',
+            participantEmail: '',
+            attachmentUrl: '',
+            meetingId: '',
+            calendarIds: '',
+            participantIds: '',
+            attachmentIds: '',
+            meetingIds: '',
+        });
         setIsEditing(false);
         setEditIndex(null);
     };
 
     return (
         <div className="container">
-            {/* Tabs for the different records */}
+
+            {/* TABS */}
             <div className="tabs">
                 <button onClick={() => setCurrentTab('Meetings')}>Meetings</button>
                 <button onClick={() => setCurrentTab('Calendars')}>Calendars</button>
@@ -153,38 +165,42 @@ const Home = () => {
             <div className="content">
                 <h2>{currentTab}</h2>
                 <div className="form">
-                    {/* Form inputs for each tab */}
-                    {/* MEETINGS */}
+
+                    {/* Meeting variables --> have to use text area because of glitch for now */}
                     {currentTab === 'Meetings' && (
                         <>
                             <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Meeting UUID" />
-                            <input name="title" value={inputData.title} onChange={handleInputChange} placeholder="Title (max 2000 characters)" />
+                            <input name="title" value={inputData.title} onChange={handleInputChange} placeholder="Title" />
                             <input name="dateTime" value={inputData.dateTime} onChange={handleInputChange} placeholder="Date and Time (YYYY-MM-DD HH:MM AM/PM)" />
-                            <input name="location" value={inputData.location} onChange={handleInputChange} placeholder="Location (max 2000 characters)" />
-                            <input name="details" value={inputData.details} onChange={handleInputChange} placeholder="Details (max 10000 characters)" />
+                            <input name="location" value={inputData.location} onChange={handleInputChange} placeholder="Location" />
+                            <textarea name="details" value={inputData.details} onChange={handleInputChange} placeholder="Details" />
+                            <input name="calendarIds" value={inputData.calendarIds} onChange={handleInputChange} placeholder="Calendar IDs (comma-separated)" />
+                            <input name="participantIds" value={inputData.participantIds} onChange={handleInputChange} placeholder="Participant IDs (comma-separated)" />
+                            <input name="attachmentIds" value={inputData.attachmentIds} onChange={handleInputChange} placeholder="Attachment IDs (comma-separated)" />
                         </>
                     )}
 
-                    {/* CALENDARS */}
+                    {/* Calendar variables --> have to use textarea because of glitch for now */}
                     {currentTab === 'Calendars' && (
                         <>
                             <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Calendar UUID" />
-                            <input name="title" value={inputData.title} onChange={handleInputChange} placeholder="Title (max 2000 characters)" />
-                            <input name="details" value={inputData.details} onChange={handleInputChange} placeholder="Details (max 10000 characters)" />
+                            <input name="title" value={inputData.title} onChange={handleInputChange} placeholder="Calendar Title" />
+                            <textarea name="details" value={inputData.details} onChange={handleInputChange} placeholder="Calendar Details" />
+                            <input name="meetingIds" value={inputData.meetingIds} onChange={handleInputChange} placeholder="Meeting IDs (comma-separated)" />
                         </>
                     )}
 
-                    {/* PARTICIPANTS */}
+                    {/* Participant variables */}
                     {currentTab === 'Participants' && (
                         <>
                             <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Participant UUID" />
                             <input name="meetingId" value={inputData.meetingId} onChange={handleInputChange} placeholder="Meeting ID" />
-                            <input name="participantName" value={inputData.participantName} onChange={handleInputChange} placeholder="Name (max 600 characters)" />
-                            <input name="participantEmail" value={inputData.participantEmail} onChange={handleInputChange} placeholder="Email" />
+                            <input name="participantName" value={inputData.participantName} onChange={handleInputChange} placeholder="Participant Name" />
+                            <input name="participantEmail" value={inputData.participantEmail} onChange={handleInputChange} placeholder="Participant Email" />
                         </>
                     )}
 
-                    {/* ATTACHMENTS */}
+                    {/* Attachment variables */}
                     {currentTab === 'Attachments' && (
                         <>
                             <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Attachment UUID" />
@@ -193,46 +209,52 @@ const Home = () => {
                         </>
                     )}
 
-                    {/* CREATE or SAVE CHANGES button */}
-                    <button onClick={isEditing ? handleUpdate : handleCreate}>
-                        {isEditing ? 'Save Changes' : 'Create'}
-                    </button>
+                    {/* Switches between update mode and create mode on selected tab */}
+                    <button onClick={isEditing ? handleUpdate : handleCreate}>{isEditing ? 'Save Changes' : 'Create'}</button>
                 </div>
 
-                {/* List of Items */}
                 <div className="list">
-                    {/* Displays the list for Meetings */}
+
+                    {/* Meetings */}
                     {currentTab === 'Meetings' && meetings.map((meeting, index) => (
                         <div key={index} className="item">
-                            <span>{meeting.uuid} - {meeting.title} - {meeting.dateTime} - {meeting.location} - {meeting.details}</span>
-                            <button onClick={() => handleEdit(index)}>Update</button>
+                            <span>
+                                <strong>UUID:</strong> {meeting.uuid} | <strong>Title:</strong> {meeting.title} | <strong>Date & Time:</strong> {meeting.dateTime} | <strong>Location:</strong> {meeting.location} | <strong>Details:</strong> {meeting.details} | <strong>Calendar IDs:</strong> {meeting.calendarIds} | <strong>Participant IDs:</strong> {meeting.participantIds} | <strong>Attachment IDs:</strong> {meeting.attachmentIds}
+                            </span>
+                            <button onClick={() => handleEdit(index)}>Edit</button>
                             <button onClick={() => handleDelete(index)}>Delete</button>
                         </div>
                     ))}
 
-                    {/* Displays the list for Calendars */}
+                    {/* Calendars */}
                     {currentTab === 'Calendars' && calendars.map((calendar, index) => (
                         <div key={index} className="item">
-                            <span>{calendar.uuid} - {calendar.title} - {calendar.details}</span>
-                            <button onClick={() => handleEdit(index)}>Update</button>
+                            <span>
+                                <strong>UUID:</strong> {calendar.uuid} | <strong>Title:</strong> {calendar.title} | <strong>Details:</strong> {calendar.details} | <strong>Meeting IDs:</strong> {calendar.meetingIds}
+                            </span>
+                            <button onClick={() => handleEdit(index)}>Edit</button>
                             <button onClick={() => handleDelete(index)}>Delete</button>
                         </div>
                     ))}
 
-                    {/* Displays the list for Participants */}
+                    {/* Participants */}
                     {currentTab === 'Participants' && participants.map((participant, index) => (
                         <div key={index} className="item">
-                            <span>{participant.uuid} - {participant.meetingId} - {participant.participantName} - {participant.participantEmail}</span>
-                            <button onClick={() => handleEdit(index)}>Update</button>
+                            <span>
+                                <strong>UUID:</strong> {participant.uuid} | <strong>Meeting ID:</strong> {participant.meetingId} | <strong>Name:</strong> {participant.participantName} | <strong>Email:</strong> {participant.participantEmail}
+                            </span>
+                            <button onClick={() => handleEdit(index)}>Edit</button>
                             <button onClick={() => handleDelete(index)}>Delete</button>
                         </div>
                     ))}
 
-                    {/* Displays the list for Attachments */}
+                    {/* Attachments */}
                     {currentTab === 'Attachments' && attachments.map((attachment, index) => (
                         <div key={index} className="item">
-                            <span>{attachment.uuid} - {attachment.meetingId} - {attachment.attachmentUrl}</span>
-                            <button onClick={() => handleEdit(index)}>Update</button>
+                            <span>
+                                <strong>UUID:</strong> {attachment.uuid} | <strong>Meeting ID:</strong> {attachment.meetingId} | <strong>URL:</strong> {attachment.attachmentUrl}
+                            </span>
+                            <button onClick={() => handleEdit(index)}>Edit</button>
                             <button onClick={() => handleDelete(index)}>Delete</button>
                         </div>
                     ))}
