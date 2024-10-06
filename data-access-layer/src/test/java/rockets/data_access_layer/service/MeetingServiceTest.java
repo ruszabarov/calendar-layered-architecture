@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import rockets.data_access_layer.entity.Meeting;
+import rockets.data_access_layer.repository.CalendarRepository;
 import rockets.data_access_layer.repository.MeetingRepository;
 
 import java.util.*;
@@ -18,6 +19,9 @@ public class MeetingServiceTest {
 
     @Mock
     private MeetingRepository meetingRepository;
+
+    @Mock
+    private CalendarRepository calendarRepository;
 
     @InjectMocks
     private MeetingService meetingService;
@@ -129,6 +133,12 @@ public class MeetingServiceTest {
     @Test
     void testDeleteMeeting() {
         UUID randomId = UUID.randomUUID();
+        Meeting meeting = new Meeting();
+        meeting.setId(randomId);
+        meeting.setCalendars(new HashSet<>());
+
+        when(meetingRepository.findById(randomId)).thenReturn(Optional.of(meeting));
+
         meetingService.deleteMeeting(randomId);
         verify(meetingRepository, times(1)).deleteById(randomId);
     }

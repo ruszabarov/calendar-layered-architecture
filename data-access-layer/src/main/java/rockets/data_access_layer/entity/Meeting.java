@@ -1,7 +1,6 @@
 package rockets.data_access_layer.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -29,7 +28,7 @@ public class Meeting {
     @Size(max = 10000, message = "length of details should not exceed 10000 characters")
     String details;
 
-    @ManyToMany(mappedBy = "meetings")
+    @ManyToMany(mappedBy = "meetings", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<Calendar> calendars = new HashSet<>();
 
     @Size(min = 1, message = "At least one participant is required")
@@ -39,7 +38,6 @@ public class Meeting {
             joinColumns = @JoinColumn(name = "meeting_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
-    @JsonIgnoreProperties("meetings")
     Set<Participant> participants = new HashSet<>();
 
     @ManyToMany
