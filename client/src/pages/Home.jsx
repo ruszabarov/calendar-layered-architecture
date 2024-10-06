@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import './Home.css';
+
+const API_URL = 'http://localhost:5000'; // Replace with the correct backend URL
 
 const Home = () => {
     const [currentTab, setCurrentTab] = useState('Meetings');
@@ -8,7 +11,6 @@ const Home = () => {
     const [calendars, setCalendars] = useState([]);
     const [participants, setParticipants] = useState([]);
     const [attachments, setAttachments] = useState([]);
-
     const [inputData, setInputData] = useState({
         uuid: '',
         title: '',
@@ -24,9 +26,40 @@ const Home = () => {
         attachmentIds: '',
         meetingIds: '',
     });
-
     const [isEditing, setIsEditing] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
+
+    // Fetch data on initial load
+    useEffect(() => {
+        fetchData();
+    }, [currentTab]);
+
+    // Fetches data to send data
+    const fetchData = async () => {
+        // Meetings
+        if (currentTab === 'Meetings') {
+            const response = await axios.get(`${API_URL}/meetings`);
+            setMeetings(response.data);
+        }
+
+        // Calendars
+        if (currentTab === 'Calendars') {
+            const response = await axios.get(`${API_URL}/calendars`);
+            setCalendars(response.data);
+        }
+
+        // Participants
+        if (currentTab === 'Participants') {
+            const response = await axios.get(`${API_URL}/participants`);
+            setParticipants(response.data);
+        }
+
+        // Attachments
+        if (currentTab === 'Attachments') {
+            const response = await axios.get(`${API_URL}/attachments`);
+            setAttachments(response.data);
+        }
+    };
 
     const handleInputChange = (e) => {
         setInputData({ ...inputData, [e.target.name]: e.target.value });
@@ -34,103 +67,93 @@ const Home = () => {
 
     // Validations
     const validateInputs = () => {
-        // Ensures meeting validations are correct
+        // Ensures Meeting information is in correct format
         if (currentTab === 'Meetings') {
-            // not sure how DATE/TIME works but it does
-            return (
-                inputData.title.length <= 2000 &&
+            return inputData.title.length <= 2000 &&
                 /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} (AM|PM)$/.test(inputData.dateTime) &&
                 inputData.location.length <= 2000 &&
-                inputData.details.length <= 10000
-            );
+                inputData.details.length <= 10000;
         }
-        // Ensures calendar validations are correct
+        // Ensures Calendars information is in correct format
         if (currentTab === 'Calendars') {
             return inputData.title.length <= 2000 && inputData.details.length <= 10000;
         }
-        // Ensures participant validations are correct
+        // Ensures Participant information is in correct format
         if (currentTab === 'Participants') {
-            return (
-                inputData.participantName.length <= 600 &&
-                /\S+@\S+\.\S+/.test(inputData.participantEmail)
-            );
+            return inputData.participantName.length <= 600 && /\S+@\S+\.\S+/.test(inputData.participantEmail);
         }
-        // Ensures attachments are URLs
+        // Ensures Attachment information is in correct format
         if (currentTab === 'Attachments') {
             return inputData.attachmentUrl.startsWith('http');
         }
         return true;
     };
 
-    // Creates form if validations are met
-    const handleCreate = () => {
+    // Creates only if inputs are valid
+    const handleCreate = async () => {
         if (!validateInputs()) {
             alert('Invalid input values. Please correct the errors.');
             return;
         }
+
+        // Generates uuid if blank
         const newItem = { ...inputData, uuid: inputData.uuid || uuidv4() };
-        if (currentTab === 'Meetings') setMeetings([...meetings, newItem]);
-        if (currentTab === 'Calendars') setCalendars([...calendars, newItem]);
-        if (currentTab === 'Participants') setParticipants([...participants, newItem]);
-        if (currentTab === 'Attachments') setAttachments([...attachments, newItem]);
-        resetForm();
-    };
 
-    // Deletes on delete button
-    const handleDelete = (index) => {
-        if (currentTab === 'Meetings') setMeetings(meetings.filter((_, i) => i !== index));
-        if (currentTab === 'Calendars') setCalendars(calendars.filter((_, i) => i !== index));
-        if (currentTab === 'Participants') setParticipants(participants.filter((_, i) => i !== index));
-        if (currentTab === 'Attachments') setAttachments(attachments.filter((_, i) => i !== index));
-    };
-
-    // Allows for edits
-    const handleEdit = (index) => {
-        setIsEditing(true);
-        setEditIndex(index);
-        if (currentTab === 'Meetings') setInputData(meetings[index]);
-        if (currentTab === 'Calendars') setInputData(calendars[index]);
-        if (currentTab === 'Participants') setInputData(participants[index]);
-        if (currentTab === 'Attachments') setInputData(attachments[index]);
-    };
-
-    // Updates only if valid inputs
-    const handleUpdate = () => {
-        if (!validateInputs()) {
-            alert('Invalid input values. Please correct the errors.');
-            return;
-        }
-
-        // Props for the input data
-        const updatedItem = { ...inputData };
+        // Post requests
         // Meetings
         if (currentTab === 'Meetings') {
-            const updatedMeetings = [...meetings];
-            updatedMeetings[editIndex] = updatedItem;
-            setMeetings(updatedMeetings);
+            await axios.post(`${API_URL}/meetings`, newItem);
         }
         // Calendars
         if (currentTab === 'Calendars') {
-            const updatedCalendars = [...calendars];
-            updatedCalendars[editIndex] = updatedItem;
-            setCalendars(updatedCalendars);
+            await axios.post(`${API_URL}/calendars`, newItem);
         }
         // Participants
         if (currentTab === 'Participants') {
-            const updatedParticipants = [...participants];
-            updatedParticipants[editIndex] = updatedItem;
-            setParticipants(updatedParticipants);
+            await axios.post(`${API_URL}/participants`, newItem);
         }
         // Attachments
         if (currentTab === 'Attachments') {
-            const updatedAttachments = [...attachments];
-            updatedAttachments[editIndex] = updatedItem;
-            setAttachments(updatedAttachments);
+            await axios.post(`${API_URL}/attachments`, newItem);
         }
+        // Fetches / reloads data
+        fetchData();
+        // Resets form
         resetForm();
     };
 
-    // Resets the form on 'create' or 'save changes'
+    // Handles delete
+    const handleDelete = async (index, id) => {
+        if (currentTab === 'Meetings') await axios.delete(`${API_URL}/meetings/${id}`);
+        if (currentTab === 'Calendars') await axios.delete(`${API_URL}/calendars/${id}`);
+        if (currentTab === 'Participants') await axios.delete(`${API_URL}/participants/${id}`);
+        if (currentTab === 'Attachments') await axios.delete(`${API_URL}/attachments/${id}`);
+        fetchData();
+    };
+
+    // Handles edit
+    const handleEdit = (index, item) => {
+        setIsEditing(true);
+        setEditIndex(index);
+        setInputData(item);
+    };
+
+    // Handles update
+    const handleUpdate = async () => {
+        if (!validateInputs()) {
+            alert('Invalid input values. Please correct the errors.');
+            return;
+        }
+        const updatedItem = { ...inputData };
+        if (currentTab === 'Meetings') await axios.put(`${API_URL}/meetings/${updatedItem.uuid}`, updatedItem);
+        if (currentTab === 'Calendars') await axios.put(`${API_URL}/calendars/${updatedItem.uuid}`, updatedItem);
+        if (currentTab === 'Participants') await axios.put(`${API_URL}/participants/${updatedItem.uuid}`, updatedItem);
+        if (currentTab === 'Attachments') await axios.put(`${API_URL}/attachments/${updatedItem.uuid}`, updatedItem);
+        fetchData();
+        resetForm();
+    };
+
+    // Reset form function
     const resetForm = () => {
         setInputData({
             uuid: '',
