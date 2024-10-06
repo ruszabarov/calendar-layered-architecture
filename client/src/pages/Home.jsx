@@ -11,7 +11,6 @@ const Home = () => {
     const [meetings, setMeetings] = useState([]);
     const [calendars, setCalendars] = useState([]);
     const [participants, setParticipants] = useState([]);
-    const [attachments, setAttachments] = useState([]);
     const [inputData, setInputData] = useState({
         uuid: '',
         title: '',

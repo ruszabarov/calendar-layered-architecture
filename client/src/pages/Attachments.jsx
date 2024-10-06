@@ -27,15 +27,15 @@ const Attachments = () => {
                         <strong>UUID:</strong> {attachment.id} | <strong>URL:</strong> {attachment.url}
                     </span>
                     <br></br>
-                    <span>
+                    <span style={{display: 'block'}}>
                         Meetings:
                     </span>
                     {attachment.meetings.map((meeting, index) => (
-                        <span>
+                        <span style={{display: 'block', marginLeft: '20px'}}>
                             <strong>UUID:</strong> {meeting.id} |
-                            <strong>Title:</strong> {meeting.title} |
-                            <strong>Details:</strong> {meeting.details} |
-                            <strong>Location:</strong> {meeting.location}
+                            <strong> Title:</strong> {meeting.title} |
+                            <strong> Details:</strong> {meeting.details} |
+                            <strong> Location:</strong> {meeting.location}
                         </span>
                     ))}
 
