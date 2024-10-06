@@ -57,6 +57,7 @@ public class MeetingController {
         meeting.setTitle(meetingDTO.getTitle());
         meeting.setDetails(meetingDTO.getDetails());
         meeting.setDateTime(meetingDTO.getDateTime());
+        meeting.setLocation(meetingDTO.getLocation());
 
         return meetingService.updateMeeting(id, meeting)
                 .map(ResponseEntity::ok)
