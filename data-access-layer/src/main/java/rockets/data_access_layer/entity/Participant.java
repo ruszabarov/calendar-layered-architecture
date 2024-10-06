@@ -1,8 +1,6 @@
 package rockets.data_access_layer.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -12,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
