@@ -9,7 +9,6 @@ export const API_URL = 'http://localhost:3000'; // Replace with the correct back
 
 const Home = () => {
     const [currentTab, setCurrentTab] = useState('Meetings');
-    const [meetings, setMeetings] = useState([]);
     const [calendars, setCalendars] = useState([]);
     const [participants, setParticipants] = useState([]);
     const [inputData, setInputData] = useState({
@@ -37,12 +36,6 @@ const Home = () => {
 
     // Fetches data to send data
     const fetchData = async () => {
-        // Meetings
-        if (currentTab === 'Meetings') {
-            const response = await axios.get(`${API_URL}/meetings`);
-            setMeetings(response.data);
-        }
-
         // Calendars
         if (currentTab === 'Calendars') {
             const response = await axios.get(`${API_URL}/calendars`);
@@ -184,27 +177,6 @@ const Home = () => {
                 <h2>{currentTab}</h2>
                 <div className="form">
 
-                    {/* Meeting variables --> have to use text area because of glitch for now */}
-                    {currentTab === 'Meetings' && (
-                        <>
-                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange}
-                                   placeholder="Meeting UUID"/>
-                            <input name="title" value={inputData.title} onChange={handleInputChange}
-                                   placeholder="Title"/>
-                            <input name="dateTime" value={inputData.dateTime} onChange={handleInputChange}
-                                   placeholder="Date and Time (YYYY-MM-DD HH:MM AM/PM)"/>
-                            <input name="location" value={inputData.location} onChange={handleInputChange}
-                                   placeholder="Location"/>
-                            <textarea name="details" value={inputData.details} onChange={handleInputChange}
-                                      placeholder="Details"/>
-                            <input name="calendarIds" value={inputData.calendarIds} onChange={handleInputChange}
-                                   placeholder="Calendar IDs (comma-separated)"/>
-                            <input name="participantIds" value={inputData.participantIds} onChange={handleInputChange}
-                                   placeholder="Participant IDs (comma-separated)"/>
-                            <input name="attachmentIds" value={inputData.attachmentIds} onChange={handleInputChange}
-                                   placeholder="Attachment IDs (comma-separated)"/>
-                        </>
-                    )}
 
                     {/* Calendar variables --> have to use textarea because of glitch for now */}
                     {currentTab === 'Calendars' && (
