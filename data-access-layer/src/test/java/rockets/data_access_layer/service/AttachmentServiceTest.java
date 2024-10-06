@@ -8,10 +8,7 @@ import org.mockito.MockitoAnnotations;
 import rockets.data_access_layer.entity.Attachment;
 import rockets.data_access_layer.repository.AttachmentRepository;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -107,6 +104,13 @@ public class AttachmentServiceTest {
     @Test
     void testDeleteAttachment() {
         UUID randomId = UUID.randomUUID();
+        Attachment attachment = new Attachment();
+        attachment.setId(randomId);
+        attachment.setMeetings(new HashSet<>());
+
+        doNothing().when(attachmentRepository).deleteById(randomId);
+        when(attachmentRepository.findById(randomId)).thenReturn(Optional.of(attachment));
+
         attachmentService.deleteAttachment(randomId);
 
         verify(attachmentRepository, times(1)).deleteById(randomId);

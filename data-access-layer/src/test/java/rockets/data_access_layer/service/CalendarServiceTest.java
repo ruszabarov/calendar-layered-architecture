@@ -121,6 +121,7 @@ public class CalendarServiceTest {
     void testDeleteCalendar() {
         UUID randomId = UUID.randomUUID();
 
+        doNothing().when(calendarRepository).deleteById(randomId);
         calendarService.deleteCalendar(randomId);
 
         verify(calendarRepository, times(1)).deleteById(randomId);

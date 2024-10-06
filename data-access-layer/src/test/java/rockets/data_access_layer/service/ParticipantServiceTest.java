@@ -122,6 +122,9 @@ public class ParticipantServiceTest {
     @Test
     void testDeleteParticipant() {
         UUID randomId = UUID.randomUUID();
+        Participant participant = new Participant();
+
+        when(participantRepository.findById(randomId)).thenReturn(Optional.of(participant));
 
         doNothing().when(participantRepository).deleteById(randomId);
 

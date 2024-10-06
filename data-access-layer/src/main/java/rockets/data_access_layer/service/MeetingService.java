@@ -67,7 +67,6 @@ public class MeetingService {
             calendar.getMeetings().remove(meeting);
             meeting.getCalendars().remove(calendar);
 
-            // Step 2: Delete Calendar if it has no more Meetings
             if (calendar.getMeetings().isEmpty()) {
                 calendarRepository.delete(calendar);
             }

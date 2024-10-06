@@ -1,24 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
-import { API_URL } from "./Home";
 
 const Calendars = () => {
     // useStates
     const [calendars, setCalendars] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
+    const [newMeetingUUID, setNewMeetingUUID] = useState('');
+
 
     const [editingElement, setEditingElement] = useState({
         id: '',
         title: '',
         details: '',
-        meetingIds: ''
+        meetingId: ''
     });
 
     // Fetch calendar data
     const fetchCalendars = async () => {
         try {
-            const response = await axios.get(`${API_URL}/calendars`);
+            const response = await axios.get(`/api/calendars`);
             setCalendars(response.data);
         } catch (error) {
             console.error("Error fetching calendars data: ", error);
@@ -50,9 +51,13 @@ const Calendars = () => {
         if (!validateInputs()) return;
 
         if (isEditing) {
-            await axios.put(`${API_URL}/calendars/${editingElement.id}`, editingElement);
+            await axios.put(`/api/calendars/${editingElement.id}`, editingElement);
         } else {
-            await axios.post(`${API_URL}/calendars`, editingElement);
+            await axios.post(`/api/calendars`, {
+                ...editingElement,
+                id: editingElement.id ? editingElement : undefined,
+                meetingIds: [editingElement.meetingId]
+            });
         }
         fetchCalendars();
         resetForm();
@@ -67,13 +72,13 @@ const Calendars = () => {
 
     // Handles delete
     const handleDelete = async (id) => {
-        await axios.delete(`${API_URL}/calendars/${id}`);
+        await axios.delete(`/api/calendars/${id}`);
         fetchCalendars();
     };
 
     // Handles the change
     const handleInputChange = (e) => {
-        setEditingElement({ ...editingElement, [e.target.name]: e.target.value });
+        setEditingElement({...editingElement, [e.target.name]: e.target.value});
     };
 
     // Resets form
@@ -82,41 +87,69 @@ const Calendars = () => {
             id: '',
             title: '',
             details: '',
-            meetingIds: ''
+            meetingId: ''
         });
         setIsEditing(false);
         setEditIndex(null);
     };
 
+    const handleMeetingUUIDChange = (e) => {
+        setNewMeetingUUID(e.target.value);
+    };
+
+    const handleAddMeeting = async () => {
+        if (newMeetingUUID) {
+            try {
+                const response = await axios.post(`/api/meetings/${editingElement.id}/participants`,
+                    [newMeetingUUID]
+                );
+                setCalendars(calendars.map(calendar => calendar.id === response.data.id ? response.data : calendar));
+                setNewMeetingUUID('');
+            } catch (error) {
+                console.error('Error adding participant: ', error);
+            }
+        }
+    };
+
     return (
         <div>
             <div className="form">
-                <input name="uuid" value={editingElement.id} onChange={handleInputChange} placeholder="Calendar UUID" />
-                <input name="title" value={editingElement.title} onChange={handleInputChange} placeholder="Title (max 2000 characters)" />
-                <textarea name="details" value={editingElement.details} onChange={handleInputChange} placeholder="Details (max 10000 characters)" />
-                <input name="meetingIds" value={editingElement.meetingIds} onChange={handleInputChange} placeholder="Meeting IDs (comma-separated)" />
+                <input name="uuid" value={editingElement.id} onChange={handleInputChange} placeholder="Calendar UUID"/>
+                <input name="title" value={editingElement.title} onChange={handleInputChange}
+                       placeholder="Title (max 2000 characters)"/>
+                <textarea name="details" value={editingElement.details} onChange={handleInputChange}
+                          placeholder="Details (max 10000 characters)"/>
+                <input name="meetingId" value={editingElement.meetingId} onChange={handleInputChange}
+                       placeholder="Meeting ID"/>
             </div>
 
             <button onClick={handleCreateOrUpdate}>
                 {isEditing ? 'Save Changes' : 'Create'}
             </button>
 
+            <div className="meeting-form" style={{marginBottom: '50px'}}>
+                <h4>Add Meeting by UUID</h4>
+                <input name="meetingUUID" value={newMeetingUUID} onChange={handleMeetingUUIDChange}
+                       placeholder="Participant UUID"/>
+                <button onClick={handleAddMeeting}>Add Meeting</button>
+            </div>
+
             {calendars.map((calendar, index) => (
-                <div key={index} style={{ marginBottom: '20px' }}>
+                <div key={index} style={{marginBottom: '30px'}}>
+                    <hr/>
                     <span>
                         <strong>UUID:</strong> {calendar.id} | 
                         <strong> Title:</strong> {calendar.title} | 
-                        <strong> Details:</strong> {calendar.details} | 
-                        <strong> Meeting IDs:</strong> {calendar.meetingIds}
+                        <strong> Details:</strong> {calendar.details} |
                     </span>
-                    
+
                     {calendar.meetings && calendar.meetings.length > 0 && (
-                        <span style={{ display: 'block', marginTop: '10px' }}>
+                        <span style={{display: 'block', marginTop: '10px'}}>
                             <strong>Meetings:</strong>
                         </span>
                     )}
                     {calendar.meetings && calendar.meetings.map((meeting, index) => (
-                        <span key={index} style={{ display: 'block', marginLeft: '20px' }}>
+                        <span key={index} style={{display: 'block', marginLeft: '20px'}}>
                             <strong>UUID:</strong> {meeting.id} | 
                             <strong> Title:</strong> {meeting.title} | 
                             <strong> Date & Time:</strong> {meeting.dateTime} | 
@@ -124,9 +157,10 @@ const Calendars = () => {
                             <strong> Details:</strong> {meeting.details}
                         </span>
                     ))}
-                    
+
                     <button onClick={() => handleEdit(index, calendar)}>Edit</button>
                     <button onClick={() => handleDelete(calendar.id)}>Delete</button>
+                    <hr/>
                 </div>
             ))}
         </div>

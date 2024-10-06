@@ -1,12 +1,12 @@
 package rockets.data_access_layer.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import rockets.data_access_layer.entity.Attachment;
+import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.repository.AttachmentRepository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AttachmentService {
@@ -36,6 +36,16 @@ public class AttachmentService {
     }
 
     public void deleteAttachment(UUID id) {
+        Attachment attachment = attachmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Attachment not found"));
+
+        Set<Meeting> meetings = new HashSet<>(attachment.getMeetings());
+
+        for (Meeting meeting : meetings) {
+            meeting.getAttachments().remove(attachment);
+            attachment.getMeetings().remove(meeting);
+        }
+
         attachmentRepository.deleteById(id);
     }
 }

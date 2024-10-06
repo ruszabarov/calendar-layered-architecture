@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
-import { API_URL } from "./Home";
-
 
 const Participants = () => {
     // useStates
@@ -12,16 +10,15 @@ const Participants = () => {
 
     const [editingElement, setEditingElement] = useState({
         id: '',
-        participantName: '',
-        participantEmail: '',
-        meetingId: ''
+        name: '',
+        email: '',
     });
 
 
     // Fetch participants data
     const fetchParticipants = async () => {
         try {
-            const response = await axios.get(`${API_URL}/participants`);
+            const response = await axios.get(`/api/participants`);
             setParticipants(response.data);
         } catch (error) {
             console.error('Error fetching data: ', error);
@@ -41,24 +38,16 @@ const Participants = () => {
             alert('Name should not exceed 600 characters.');
             return false;
         }
-        // Not sure how it works but ensures that there is a valid email
-        if (!/\S+@\S+\.\S+/.test(editingElement.participantEmail)) {
-            alert('Please enter a valid email address.');
-            return false;
-        }
         return true;
     };
 
 
     // Handle create or update participant
     const handleCreateOrUpdate = async () => {
-        if (!validateInputs()) return;
-
-
         if (isEditing) {
-            await axios.put(`${API_URL}/participants/${editingElement.id}`, editingElement);
+            await axios.put(`/api/participants/${editingElement.id}`, editingElement);
         } else {
-            await axios.post(`${API_URL}/participants`, editingElement);
+            await axios.post(`/api/participants`, editingElement);
         }
         fetchParticipants();
         resetForm();
@@ -75,14 +64,14 @@ const Participants = () => {
 
     // Deletes id
     const handleDelete = async (id) => {
-        await axios.delete(`${API_URL}/participants/${id}`);
+        await axios.delete(`/api/participants/${id}`);
         fetchParticipants();
     };
 
 
     // Handles the change
     const handleInputChange = (e) => {
-        setEditingElement({ ...editingElement, [e.target.name]: e.target.value });
+        setEditingElement({...editingElement, [e.target.name]: e.target.value});
     };
 
 
@@ -90,9 +79,8 @@ const Participants = () => {
     const resetForm = () => {
         setEditingElement({
             id: '',
-            participantName: '',
-            participantEmail: '',
-            meetingId: ''
+            name: '',
+            email: '',
         });
         setIsEditing(false);
         setEditIndex(null);
@@ -102,10 +90,12 @@ const Participants = () => {
     return (
         <div>
             <div className="form">
-                <input name="uuid" value={editingElement.id} onChange={handleInputChange} placeholder="Participant UUID" />
-                <input name="participantName" value={editingElement.participantName} onChange={handleInputChange} placeholder="Name (max 600 characters)" />
-                <input name="participantEmail" value={editingElement.participantEmail} onChange={handleInputChange} placeholder="Email" />
-                <input name="meetingId" value={editingElement.meetingId} onChange={handleInputChange} placeholder="Associated Meeting ID" />
+                <input name="id" value={editingElement.id} onChange={handleInputChange}
+                       placeholder="Participant UUID"/>
+                <input name="name" value={editingElement.name} onChange={handleInputChange}
+                       placeholder="Name (max 600 characters)"/>
+                <input name="email" value={editingElement.email} onChange={handleInputChange}
+                       placeholder="Email"/>
             </div>
 
 
@@ -115,12 +105,11 @@ const Participants = () => {
 
 
             {participants.map((participant, index) => (
-                <div key={index} style={{ marginBottom: '20px' }}>
+                <div key={index} style={{marginBottom: '20px'}}>
                     <span>
                         <strong>UUID:</strong> {participant.id} |
-                        <strong> Name:</strong> {participant.participantName} |
-                        <strong> Email:</strong> {participant.participantEmail} |
-                        <strong> Meeting ID:</strong> {participant.meetingId}
+                        <strong> Name:</strong> {participant.name} |
+                        <strong> Email:</strong> {participant.email} |
                     </span>
                     <button onClick={() => handleEdit(index, participant)}>Edit</button>
                     <button onClick={() => handleDelete(participant.id)}>Delete</button>

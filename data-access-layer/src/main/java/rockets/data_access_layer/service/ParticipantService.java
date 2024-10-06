@@ -1,20 +1,23 @@
 package rockets.data_access_layer.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.entity.Participant;
+import rockets.data_access_layer.repository.MeetingRepository;
 import rockets.data_access_layer.repository.ParticipantRepository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
 
-    public ParticipantService(ParticipantRepository participantRepository) {
+    private final MeetingRepository meetingRepository;
+
+    public ParticipantService(ParticipantRepository participantRepository, MeetingRepository meetingRepository) {
         this.participantRepository = participantRepository;
+        this.meetingRepository = meetingRepository;
     }
 
     public List<Participant> getAllParticipants() {
@@ -42,6 +45,20 @@ public class ParticipantService {
     }
 
     public void deleteParticipant(UUID id) {
+        Participant participant = participantRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Participant not found"));
+
+        Set<Meeting> meetings = new HashSet<>(participant.getMeetings());
+
+        for (Meeting meeting : meetings) {
+            meeting.getParticipants().remove(participant);
+            participant.getMeetings().remove(meeting);
+
+            if (meeting.getParticipants().isEmpty()) {
+                meetingRepository.delete(meeting);
+            }
+        }
+
         participantRepository.deleteById(id);
     }
 }

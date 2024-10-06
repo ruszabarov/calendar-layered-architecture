@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {API_URL} from "./Home";
 
 const Meetings = () => {
     const [meetings, setMeetings] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
+    const [newParticipantUUID, setNewParticipantUUID] = useState('');
+    const [newAttachmentUUID, setNewAttachmentUUID] = useState('');
 
     const [editingElement, setEditingElement] = useState({
         id: '',
@@ -13,12 +14,12 @@ const Meetings = () => {
         details: '',
         dateTime: '',
         location: '',
+        participantIds: '',
     });
 
     const fetchMeetings = async () => {
         try {
-            // Replace 'your-api-endpoint' with the actual endpoint you want to call
-            const response = await axios.get(`${API_URL}/meetings`);
+            const response = await axios.get(`/api/meetings`);
             setMeetings(response.data);
         } catch (error) {
             console.error('Error fetching data: ', error);
@@ -30,7 +31,11 @@ const Meetings = () => {
     }, []);
 
     const handleCreate = async () => {
-        await axios.post(`${API_URL}/attachments`, editingElement);
+        await axios.post(`/api/meetings`, {
+            ...editingElement,
+            id: editingElement.id ? editingElement.id : undefined,
+            participantIds: [editingElement.participantIds]
+        });
         fetchMeetings();
         resetForm();
     }
@@ -42,7 +47,7 @@ const Meetings = () => {
     };
 
     const handleDelete = async (index, id) => {
-        await axios.delete(`${API_URL}/meetings/${id}`);
+        await axios.delete(`/api/meetings/${id}`);
         fetchMeetings();
     };
 
@@ -50,10 +55,52 @@ const Meetings = () => {
         setEditingElement({...editingElement, [e.target.name]: e.target.value});
     };
 
+    const handleParticipantUUIDChange = (e) => {
+        setNewParticipantUUID(e.target.value);
+    };
+
+    const handleAddParticipant = async () => {
+        if (newParticipantUUID) {
+            try {
+                await axios.post(`/api/meetings/${editingElement.id}/participants`,
+                    [newParticipantUUID]
+                );
+                fetchMeetings();
+                setNewParticipantUUID('');
+            } catch (error) {
+                console.error('Error adding participant: ', error);
+            }
+        }
+    };
+
+    const handleAttachmentUUIDChange = (e) => {
+        setNewAttachmentUUID(e.target.value);
+    };
+
+    const handleAddAttachment = async () => {
+        if (newAttachmentUUID) {
+            try {
+                await axios.post(`/api/meetings/${editingElement.id}/attachments`,
+                    [newAttachmentUUID]
+                );
+                fetchMeetings();
+                setNewAttachmentUUID('');
+            } catch (error) {
+                console.error('Error adding participant: ', error);
+            }
+        }
+    };
+
     const handleUpdate = async () => {
-        const updatedItem = {...editingElement};
-        await axios.put(`${API_URL}/meetings/${updatedItem.uuid}`, updatedItem);
-        fetchMeetings();
+        const updatedItem = {
+            id: editingElement.id,
+            title: editingElement.title,
+            details: editingElement.details,
+            dateTime: editingElement.dateTime,
+            location: editingElement.location,
+        };
+        const response = await axios.put(`/api/meetings/${updatedItem.id}`, updatedItem);
+        setMeetings(meetings.map(meeting => meeting.id === response.data.id ? response.data : meeting));
         resetForm();
     };
 
@@ -82,14 +129,31 @@ const Meetings = () => {
                        placeholder="Location"/>
                 <textarea name="details" value={editingElement.details} onChange={handleInputChange}
                           placeholder="Details"/>
+                <input name="participantIds" value={editingElement.participantIds} onChange={handleInputChange}
+                       placeholder="Participant ID"/>
             </div>
 
             <button onClick={isEditing ? handleUpdate : handleCreate}>
                 {isEditing ? 'Save Changes' : 'Create'}
             </button>
 
+            <div className="participant-form">
+                <h4>Add Participant by UUID</h4>
+                <input name="participantUUID" value={newParticipantUUID} onChange={handleParticipantUUIDChange}
+                       placeholder="Participant UUID"/>
+                <button onClick={handleAddParticipant}>Add Participant</button>
+            </div>
+
+            <div className="attachment-form" style={{marginBottom: '50px'}}>
+                <h4>Add Attachment by UUID</h4>
+                <input name="attachmentUUID" value={newAttachmentUUID} onChange={handleAttachmentUUIDChange}
+                       placeholder="Attachment UUID"/>
+                <button onClick={handleAddAttachment}>Add Attachment</button>
+            </div>
+
             {meetings.map((meeting, index) => (
-                <div style={{marginBottom: '20px'}}>
+                <div style={{marginBottom: '30px'}}>
+                    <hr/>
                     <span>
                         <strong>UUID:</strong> {meeting.id} | <strong>Title:</strong> {meeting.title} | <strong>Date & Time:</strong> {meeting.dateTime} | <strong>Location:</strong> {meeting.location} | <strong>Details:</strong> {meeting.details}
                     </span>
@@ -106,6 +170,7 @@ const Meetings = () => {
                             <strong> Details:</strong> {calendar.details} |
                         </span>
                     ))}
+
                     {meeting.participants.length > 0 &&
                         <span style={{display: 'block'}}>
                             Participants:
@@ -132,7 +197,8 @@ const Meetings = () => {
                         </span>
                     ))}
                     <button onClick={() => handleEdit(index, meeting)}>Edit</button>
-                    <button onClick={() => handleDelete(index)}>Delete</button>
+                    <button onClick={() => handleDelete(index, meeting.id)}>Delete</button>
+                    <hr/>
                 </div>
             ))
             }
