@@ -3,6 +3,7 @@ import axios from 'axios';
 import {v4 as uuidv4} from 'uuid';
 import './Home.css';
 import Attachments from "./Attachments";
+import Meetings from "./Meetings";
 
 export const API_URL = 'http://localhost:3000'; // Replace with the correct backend URL
 
@@ -253,15 +254,7 @@ const Home = () => {
                 <div className="list">
 
                     {/* Meetings */}
-                    {currentTab === 'Meetings' && meetings.map((meeting, index) => (
-                        <div key={index} className="item">
-                            <span>
-                                <strong>UUID:</strong> {meeting.uuid} | <strong>Title:</strong> {meeting.title} | <strong>Date & Time:</strong> {meeting.dateTime} | <strong>Location:</strong> {meeting.location} | <strong>Details:</strong> {meeting.details} | <strong>Calendar IDs:</strong> {meeting.calendarIds} | <strong>Participant IDs:</strong> {meeting.participantIds} | <strong>Attachment IDs:</strong> {meeting.attachmentIds}
-                            </span>
-                            <button onClick={() => handleEdit(index)}>Edit</button>
-                            <button onClick={() => handleDelete(index)}>Delete</button>
-                        </div>
-                    ))}
+                    {currentTab === 'Meetings' && <Meetings/>}
 
                     {/* Calendars */}
                     {currentTab === 'Calendars' && calendars.map((calendar, index) => (
