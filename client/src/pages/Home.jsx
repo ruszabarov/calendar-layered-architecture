@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import './Home.css';
+import Attachments from "./Attachments";
 
-const API_URL = 'http://localhost:5000'; // Replace with the correct backend URL
+export const API_URL = 'http://localhost:3000'; // Replace with the correct backend URL
 
 const Home = () => {
     const [currentTab, setCurrentTab] = useState('Meetings');
@@ -19,7 +20,7 @@ const Home = () => {
         location: '',
         participantName: '',
         participantEmail: '',
-        attachmentUrl: '',
+        url: '',
         meetingId: '',
         calendarIds: '',
         participantIds: '',
@@ -53,16 +54,10 @@ const Home = () => {
             const response = await axios.get(`${API_URL}/participants`);
             setParticipants(response.data);
         }
-
-        // Attachments
-        if (currentTab === 'Attachments') {
-            const response = await axios.get(`${API_URL}/attachments`);
-            setAttachments(response.data);
-        }
     };
 
     const handleInputChange = (e) => {
-        setInputData({ ...inputData, [e.target.name]: e.target.value });
+        setInputData({...inputData, [e.target.name]: e.target.value});
     };
 
     // Validations
@@ -84,7 +79,7 @@ const Home = () => {
         }
         // Ensures Attachment information is in correct format
         if (currentTab === 'Attachments') {
-            return inputData.attachmentUrl.startsWith('http');
+            return inputData.url.startsWith('http');
         }
         return true;
     };
@@ -97,12 +92,12 @@ const Home = () => {
         }
 
         // Generates uuid if blank
-        const newItem = { ...inputData, uuid: inputData.uuid || uuidv4() };
+        const newItem = {...inputData, uuid: inputData.uuid || uuidv4()};
 
         // Post requests
         // Meetings
         if (currentTab === 'Meetings') {
-            await axios.post(`${API_URL}/meetings`, newItem);
+
         }
         // Calendars
         if (currentTab === 'Calendars') {
@@ -144,7 +139,7 @@ const Home = () => {
             alert('Invalid input values. Please correct the errors.');
             return;
         }
-        const updatedItem = { ...inputData };
+        const updatedItem = {...inputData};
         if (currentTab === 'Meetings') await axios.put(`${API_URL}/meetings/${updatedItem.uuid}`, updatedItem);
         if (currentTab === 'Calendars') await axios.put(`${API_URL}/calendars/${updatedItem.uuid}`, updatedItem);
         if (currentTab === 'Participants') await axios.put(`${API_URL}/participants/${updatedItem.uuid}`, updatedItem);
@@ -163,7 +158,7 @@ const Home = () => {
             location: '',
             participantName: '',
             participantEmail: '',
-            attachmentUrl: '',
+            url: '',
             meetingId: '',
             calendarIds: '',
             participantIds: '',
@@ -192,48 +187,68 @@ const Home = () => {
                     {/* Meeting variables --> have to use text area because of glitch for now */}
                     {currentTab === 'Meetings' && (
                         <>
-                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Meeting UUID" />
-                            <input name="title" value={inputData.title} onChange={handleInputChange} placeholder="Title" />
-                            <input name="dateTime" value={inputData.dateTime} onChange={handleInputChange} placeholder="Date and Time (YYYY-MM-DD HH:MM AM/PM)" />
-                            <input name="location" value={inputData.location} onChange={handleInputChange} placeholder="Location" />
-                            <textarea name="details" value={inputData.details} onChange={handleInputChange} placeholder="Details" />
-                            <input name="calendarIds" value={inputData.calendarIds} onChange={handleInputChange} placeholder="Calendar IDs (comma-separated)" />
-                            <input name="participantIds" value={inputData.participantIds} onChange={handleInputChange} placeholder="Participant IDs (comma-separated)" />
-                            <input name="attachmentIds" value={inputData.attachmentIds} onChange={handleInputChange} placeholder="Attachment IDs (comma-separated)" />
+                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange}
+                                   placeholder="Meeting UUID"/>
+                            <input name="title" value={inputData.title} onChange={handleInputChange}
+                                   placeholder="Title"/>
+                            <input name="dateTime" value={inputData.dateTime} onChange={handleInputChange}
+                                   placeholder="Date and Time (YYYY-MM-DD HH:MM AM/PM)"/>
+                            <input name="location" value={inputData.location} onChange={handleInputChange}
+                                   placeholder="Location"/>
+                            <textarea name="details" value={inputData.details} onChange={handleInputChange}
+                                      placeholder="Details"/>
+                            <input name="calendarIds" value={inputData.calendarIds} onChange={handleInputChange}
+                                   placeholder="Calendar IDs (comma-separated)"/>
+                            <input name="participantIds" value={inputData.participantIds} onChange={handleInputChange}
+                                   placeholder="Participant IDs (comma-separated)"/>
+                            <input name="attachmentIds" value={inputData.attachmentIds} onChange={handleInputChange}
+                                   placeholder="Attachment IDs (comma-separated)"/>
                         </>
                     )}
 
                     {/* Calendar variables --> have to use textarea because of glitch for now */}
                     {currentTab === 'Calendars' && (
                         <>
-                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Calendar UUID" />
-                            <input name="title" value={inputData.title} onChange={handleInputChange} placeholder="Calendar Title" />
-                            <textarea name="details" value={inputData.details} onChange={handleInputChange} placeholder="Calendar Details" />
-                            <input name="meetingIds" value={inputData.meetingIds} onChange={handleInputChange} placeholder="Meeting IDs (comma-separated)" />
+                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange}
+                                   placeholder="Calendar UUID"/>
+                            <input name="title" value={inputData.title} onChange={handleInputChange}
+                                   placeholder="Calendar Title"/>
+                            <textarea name="details" value={inputData.details} onChange={handleInputChange}
+                                      placeholder="Calendar Details"/>
+                            <input name="meetingIds" value={inputData.meetingIds} onChange={handleInputChange}
+                                   placeholder="Meeting IDs (comma-separated)"/>
                         </>
                     )}
 
                     {/* Participant variables */}
                     {currentTab === 'Participants' && (
                         <>
-                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Participant UUID" />
-                            <input name="meetingId" value={inputData.meetingId} onChange={handleInputChange} placeholder="Meeting ID" />
-                            <input name="participantName" value={inputData.participantName} onChange={handleInputChange} placeholder="Participant Name" />
-                            <input name="participantEmail" value={inputData.participantEmail} onChange={handleInputChange} placeholder="Participant Email" />
+                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange}
+                                   placeholder="Participant UUID"/>
+                            <input name="meetingId" value={inputData.meetingId} onChange={handleInputChange}
+                                   placeholder="Meeting ID"/>
+                            <input name="participantName" value={inputData.participantName} onChange={handleInputChange}
+                                   placeholder="Participant Name"/>
+                            <input name="participantEmail" value={inputData.participantEmail}
+                                   onChange={handleInputChange} placeholder="Participant Email"/>
                         </>
                     )}
 
                     {/* Attachment variables */}
                     {currentTab === 'Attachments' && (
                         <>
-                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange} placeholder="Attachment UUID" />
-                            <input name="meetingId" value={inputData.meetingId} onChange={handleInputChange} placeholder="Meeting ID" />
-                            <input name="attachmentUrl" value={inputData.attachmentUrl} onChange={handleInputChange} placeholder="Attachment URL" />
+                            <input name="uuid" value={inputData.uuid} onChange={handleInputChange}
+                                   placeholder="Attachment UUID"/>
+                            <input name="meetingId" value={inputData.meetings} onChange={handleInputChange}
+                                   placeholder="Meeting ID"/>
+                            <input name="url" value={inputData.url} onChange={handleInputChange}
+                                   placeholder="Attachment URL"/>
                         </>
                     )}
 
                     {/* Switches between update mode and create mode on selected tab */}
-                    <button onClick={isEditing ? handleUpdate : handleCreate}>{isEditing ? 'Save Changes' : 'Create'}</button>
+                    <button
+                        onClick={isEditing ? handleUpdate : handleCreate}>{isEditing ? 'Save Changes' : 'Create'}</button>
                 </div>
 
                 <div className="list">
@@ -272,15 +287,7 @@ const Home = () => {
                     ))}
 
                     {/* Attachments */}
-                    {currentTab === 'Attachments' && attachments.map((attachment, index) => (
-                        <div key={index} className="item">
-                            <span>
-                                <strong>UUID:</strong> {attachment.uuid} | <strong>Meeting ID:</strong> {attachment.meetingId} | <strong>URL:</strong> {attachment.attachmentUrl}
-                            </span>
-                            <button onClick={() => handleEdit(index)}>Edit</button>
-                            <button onClick={() => handleDelete(index)}>Delete</button>
-                        </div>
-                    ))}
+                    {currentTab === 'Attachments' && <Attachments/>}
                 </div>
             </div>
         </div>
