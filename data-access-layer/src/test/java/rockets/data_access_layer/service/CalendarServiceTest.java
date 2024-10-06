@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import rockets.data_access_layer.entity.Calendar;
 import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.repository.CalendarRepository;
+import rockets.data_access_layer.repository.MeetingRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,8 @@ public class CalendarServiceTest {
 
     @Mock
     private CalendarRepository calendarRepository;
+    @Mock
+    private MeetingRepository meetingRepository;
 
     @InjectMocks
     private CalendarService calendarService;
@@ -81,20 +84,22 @@ public class CalendarServiceTest {
         newCalendar.setTitle("New Calendar");
         newCalendar.setDetails("New Details");
 
-        List<Meeting> meetings = List.of(new Meeting());
-        newCalendar.addMeetings(meetings);
+        Meeting meeting = new Meeting();
+        meeting.setId(UUID.randomUUID());
+        newCalendar.addMeetings(List.of(meeting));
 
         when(calendarRepository.save(any(Calendar.class))).thenReturn(newCalendar);
 
         Calendar createdCalendar = calendarService.createCalendar(newCalendar);
 
         assertEquals("New Calendar", createdCalendar.getTitle());
+        assertEquals("New Details", createdCalendar.getDetails());
+        assertTrue(createdCalendar.getMeetings().contains(meeting));
         verify(calendarRepository, times(1)).save(newCalendar);
     }
 
     @Test
     void testUpdateCalendar() {
-        // Arrange
         Calendar existingCalendar = new Calendar();
         UUID randomId = UUID.randomUUID();
         existingCalendar.setId(randomId);

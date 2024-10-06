@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
+    @NotNull
     @Size(min = 1, max = 2000, message = "title should be between 1 and 2000 characters")
     @Column(nullable = false)
     String title;
@@ -25,6 +27,7 @@ public class Calendar {
     @Size(max = 10000, message = "length of details should not exceed 10000 characters")
     String details;
 
+    @NotNull
     @Size(min = 1, message = "At least one meeting is required")
     @ManyToMany
     @JoinTable(

@@ -8,10 +8,7 @@ import org.mockito.MockitoAnnotations;
 import rockets.data_access_layer.entity.Participant;
 import rockets.data_access_layer.repository.ParticipantRepository;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -71,6 +68,24 @@ public class ParticipantServiceTest {
         assertEquals("Participant Name", result.get().getName());
         assertEquals("participant@example.com", result.get().getEmail());
         verify(participantRepository, times(1)).findById(randomId);
+    }
+
+    @Test
+    void testGetAllParticipantsByIds() {
+        Participant participant1 = new Participant();
+        participant1.setId(UUID.randomUUID());
+
+        Participant participant2 = new Participant();
+        participant2.setId(UUID.randomUUID());
+
+        when(participantRepository.findAllById(anySet())).thenReturn(List.of(participant1, participant2));
+
+        List<Participant> result = participantService.getAllParticipantsByIds(Set.of(participant1.getId(), participant2.getId()));
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(participant1));
+        assertTrue(result.contains(participant2));
+        verify(participantRepository, times(1)).findAllById(Set.of(participant1.getId(), participant2.getId()));
     }
 
     @Test
