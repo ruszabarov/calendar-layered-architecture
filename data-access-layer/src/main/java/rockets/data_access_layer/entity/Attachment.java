@@ -1,7 +1,6 @@
 package rockets.data_access_layer.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
@@ -11,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Attachment {
 
     @Id
@@ -24,6 +22,7 @@ public class Attachment {
     private String url;
 
     @ManyToMany(mappedBy = "attachments")
+    @JsonIgnore
     Set<Meeting> meetings = new HashSet<>();
 
     public UUID getId() {

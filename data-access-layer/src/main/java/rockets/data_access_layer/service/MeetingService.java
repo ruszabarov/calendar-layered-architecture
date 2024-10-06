@@ -1,17 +1,18 @@
 package rockets.data_access_layer.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import rockets.data_access_layer.entity.Attachment;
+import rockets.data_access_layer.entity.Calendar;
 import rockets.data_access_layer.entity.Meeting;
 import rockets.data_access_layer.entity.Participant;
 import rockets.data_access_layer.repository.AttachmentRepository;
+import rockets.data_access_layer.repository.CalendarRepository;
 import rockets.data_access_layer.repository.MeetingRepository;
 import rockets.data_access_layer.repository.ParticipantRepository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class MeetingService {
@@ -19,10 +20,13 @@ public class MeetingService {
     private final ParticipantRepository participantRepository;
     private final AttachmentRepository attachmentRepository;
 
-    public MeetingService(MeetingRepository meetingRepository, ParticipantRepository participantRepository, AttachmentRepository attachmentRepository) {
+    private final CalendarRepository calendarRepository;
+
+    public MeetingService(MeetingRepository meetingRepository, ParticipantRepository participantRepository, AttachmentRepository attachmentRepository, CalendarRepository calendarRepository) {
         this.meetingRepository = meetingRepository;
         this.participantRepository = participantRepository;
         this.attachmentRepository = attachmentRepository;
+        this.calendarRepository = calendarRepository;
     }
 
     public List<Meeting> getAllMeetings() {
@@ -52,7 +56,23 @@ public class MeetingService {
         });
     }
 
+    @Transactional
     public void deleteMeeting(UUID id) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Meeting not found"));
+
+        Set<Calendar> calendars = new HashSet<>(meeting.getCalendars());
+
+        for (Calendar calendar : calendars) {
+            calendar.getMeetings().remove(meeting);
+            meeting.getCalendars().remove(calendar);
+
+            // Step 2: Delete Calendar if it has no more Meetings
+            if (calendar.getMeetings().isEmpty()) {
+                calendarRepository.delete(calendar);
+            }
+        }
+
         meetingRepository.deleteById(id);
     }
 

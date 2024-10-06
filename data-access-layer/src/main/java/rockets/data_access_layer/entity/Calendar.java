@@ -25,8 +25,9 @@ public class Calendar {
     @Size(max = 10000, message = "length of details should not exceed 10000 characters")
     String details;
 
+
     @Size(min = 1, message = "At least one meeting is required")
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "calendar_meeting",
             joinColumns = @JoinColumn(name = "calendar_id"),
